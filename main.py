@@ -103,7 +103,7 @@ def upload_file():
 @app.route('/<link>', methods=['GET'])
 def share_file(link):
     if link not in files_managed:
-        return "Invlid link\n", 400
+        return "Invalid link\n", 400
     return send_from_directory(app.config['UPLOAD_FOLDER'], files_managed[link], as_attachment=True)
 
 if __name__ == '__main__':
