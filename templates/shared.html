@@ -23,16 +23,14 @@
     class="bg-gray-900 text-white text-5xl w-full h-screen flex flex-col items-center justify-center gap-12 p-12"
   >
     <h1 class="text-8xl font-semibold mb-24">File Shared</h1>
-    <p>
-      Share this link:
-      <a
-        class="text-blue-100 italic"
-        href="{{ link }}"
-        id="file-link"
-        target="_blank"
-        >{{ link }}</a
-      >
-    </p>
+    <p>Share this link:</p>
+    <a
+      class="text-blue-100 italic"
+      href="{{ link }}"
+      id="file-link"
+      target="_blank"
+      >{{ link }}</a
+    >
     <button
       class="bg-gray-500 text-white py-4 px-6 rounded-lg hover:bg-gray-600 cursor-pointer"
       onclick="copyToClipboard()"

@@ -11,7 +11,7 @@ import json
 
 port = 80 # Port that the app will run on
 url = "localhost" # Url of the hosted app
-folder = "/home/yourusername/swft/share_temp" # Folder where the files will stored temporarily
+folder = "/home/nnisarggada/GitRepos/swft/share_temp" # Folder where the files will stored temporarily
 del_time = 1800 # Time until files will be deleted in seconds
 
 # -------------------------------------------------------------------
