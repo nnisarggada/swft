@@ -11,7 +11,7 @@ import json
 
 port = 80 # Port that the app will run on
 url = "localhost" # Url of the hosted app
-folder = "/home/yourusername/swft/share_temp" # Folder where the files will stored temporarily
+folder = "/home/nnisarggada/swft/share_temp" # Folder where the files will stored temporarily
 del_time = 1800 # Time until files will be deleted in seconds
 
 # -------------------------------------------------------------------
@@ -95,7 +95,7 @@ def upload_file():
         if 'curl' in user_agent.lower() or 'wget' in user_agent.lower():
             return clickable_link
         else:
-            return render_template('shared.html', link=link)
+            return render_template('shared.html', url=url, link=custom_link)
 
     except Exception as e:
         return f"Error: {e}\n", 500

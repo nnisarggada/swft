@@ -8,9 +8,9 @@
     />
     <script>
       function copyToClipboard() {
-        var link = document.getElementById("file-link").getAttribute("href");
+        var link = document.getElementById("file-link");
         var textArea = document.createElement("textarea");
-        textArea.value = link;
+        textArea.value = link.href;
         document.body.appendChild(textArea);
         textArea.select();
         document.execCommand("copy");
@@ -29,7 +29,7 @@
       href="{{ link }}"
       id="file-link"
       target="_blank"
-      >{{ link }}</a
+      >{{url}}/{{ link }}</a
     >
     <button
       class="bg-gray-500 text-white py-4 px-6 rounded-lg hover:bg-gray-600 cursor-pointer"
