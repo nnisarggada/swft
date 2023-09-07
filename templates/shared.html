@@ -8,9 +8,9 @@
     />
     <script>
       function copyToClipboard() {
-        var link = document.getElementById("file-link");
+        var link = document.getElementById("file-link").getAttribute("href");
         var textArea = document.createElement("textarea");
-        textArea.value = link.href;
+        textArea.value = link;
         document.body.appendChild(textArea);
         textArea.select();
         document.execCommand("copy");
