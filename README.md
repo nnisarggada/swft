@@ -79,7 +79,7 @@ pip install -r requirements.txt
    - SWFT supports sharing files using command-line tools like curl or wget. For example,
      
      ```bash
-     curl -X POST -F "file=@/path/to/file" -F "link=my-secret-file" http://localhost:80
+     curl -X POST -F "file=@/path/to/file" -F "link=my-secret-file" http://localhost:80/upload
      ```
      This will give a sharable URL to the file like `http://localhost:80/my-secret-file`
 
