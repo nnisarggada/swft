@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+  <head>
+    <title>SWIFT | File Shared</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <script>
+      function copyToClipboard() {
+        var link = document.getElementById("file-link");
+        var textArea = document.createElement("textarea");
+        textArea.value = link.href;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+        alert("Link copied to clipboard!");
+      }
+    </script>
+  </head>
+  <body
+    class="bg-gray-900 text-white text-5xl w-full h-screen flex flex-col items-center justify-center gap-12 p-12"
+  >
+    <h1 class="text-8xl font-semibold mb-24">File Shared</h1>
+    <p>
+      Share this link:
+      <a
+        class="text-blue-100 italic"
+        href="{{ link }}"
+        id="file-link"
+        target="_blank"
+        >{{ link }}</a
+      >
+    </p>
+    <button
+      class="bg-gray-500 text-white py-4 px-6 rounded-lg hover:bg-gray-600 cursor-pointer"
+      onclick="copyToClipboard()"
+    >
+      Copy to Clipboard
+    </button>
+  </body>
+</html>
