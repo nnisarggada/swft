@@ -86,7 +86,7 @@ def upload_file():
     try:
         uploaded_file.save(file_path)
 
-        link = f'{url}:{port}/{custom_link}\n'
+        link = f'{url}/{custom_link}\n'
         clickable_link = f'\033]8;;{link}\033\\{link}\033]8;;\033\\'
 
         files_managed[custom_link] = filename
