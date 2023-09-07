@@ -43,16 +43,16 @@ pip install -r requirements.txt
    ```python
    port = 80  # Port that the app will run on
    url = "localhost"  # URL of the hosted app
-   folder = "/home/yourusername/share_temp"  # Folder where files will be stored temporarily
+   folder = "/home/yourusername/swft/share_temp"  # Folder where files will be stored temporarily
    del_time = 1800  # Time until files will be deleted in seconds
    ```
 
 ### Running the App
 
-1. Run the SWFT app:
+1. Run the SWFT app with sudo (to give permissions):
 
    ```bash
-   python app.py
+   sudo python main.py
    ```
 
 2. Access the SWFT web interface in your web browser:
