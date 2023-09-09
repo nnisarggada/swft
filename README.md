@@ -23,7 +23,7 @@ Follow these steps to set up and run SWFT on your server.
 
 ```bash
 # Clone the SWFT repository to your server
-git clone https://github.com/yourusername/swft.git
+git clone https://github.com/nnisarggada/swft
 
 # Navigate to the project directory
 cd swft
@@ -43,7 +43,7 @@ pip install -r requirements.txt
    ```python
    port = 80  # Port that the app will run on
    url = "localhost"  # URL of the hosted app
-   folder = "/home/yourusername/swft/share_temp"  # Folder where files will be stored temporarily
+   folder = "/home/nnisarggada/swft/share_temp"  # Folder where files will be stored temporarily
    del_time = 1800  # Time until files will be deleted in seconds
    ```
 
