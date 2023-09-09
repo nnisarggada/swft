@@ -17,25 +17,77 @@
         document.body.removeChild(textArea);
         alert("Link copied to clipboard!");
       }
+
+      function shareFile() {
+        if (navigator.share) {
+          navigator
+            .share({
+              title: "Shared File",
+              text: "Check out this shared file!",
+              url: "{{ url }}/{{ link }}",
+            })
+            .then(() => {
+              console.log("Successfully shared");
+            })
+            .catch((error) => {
+              console.error("Error sharing:", error);
+            });
+        } else {
+          alert("Web Share API is not supported in this browser.");
+        }
+      }
     </script>
+    <style>
+      .share-button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        margin-top: 16px;
+      }
+    </style>
   </head>
   <body
-    class="bg-gray-900 text-white text-5xl w-full h-screen flex flex-col items-center justify-center gap-12 p-12"
+    class="bg-gray-900 text-white text-5xl w-screen h-screen flex flex-col items-center justify-center gap-12 p-12"
   >
+    <div
+      class="fixed top-0 left-0 w-screen h-24 flex justify-center items-center text-6xl font-black text-center bg-gray-800 text-white p-4"
+    >
+      SWFT
+    </div>
     <h1 class="text-8xl font-semibold mb-24">File Shared</h1>
     <p>Share this link:</p>
     <a
-      class="text-blue-100 italic"
+      class="text-blue-100 italic truncate max-w-full p-2"
       href="{{ link }}"
       id="file-link"
       target="_blank"
-      >{{url}}/{{ link }}</a
     >
+      {{ url }}/{{ link }}
+    </a>
     <button
       class="bg-gray-500 text-white py-4 px-6 rounded-lg hover:bg-gray-600 cursor-pointer"
       onclick="copyToClipboard()"
     >
       Copy to Clipboard
     </button>
+    <button
+      class="share-button bg-blue-500 text-white py-4 px-6 rounded-lg hover:bg-blue-600 cursor-pointer"
+      onclick="shareFile()"
+    >
+      Share
+    </button>
+    <div
+      class="fixed bottom-0 left-0 w-screen h-20 flex justify-center items-center text-xl text-center bg-gray-800 text-white p-2 mt-12"
+    >
+      Made with ❣️ by &nbsp;
+      <a
+        href="https://nnisarg.in"
+        target="_blank"
+        class="underline text-blue-500"
+        >Nnisarg Gada</a
+      >
+    </div>
   </body>
 </html>
