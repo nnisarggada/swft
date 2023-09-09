@@ -22,6 +22,9 @@
 
         return true;
       }
+      function showFileUploaded() {
+        alert("File uploaded successfully!");
+      }
       window.onload = clearInputs;
     </script>
   </head>
@@ -53,6 +56,7 @@
           id="file"
           style="display: none"
           required
+          onchange="showFileUploaded()"
         />
       </div>
       <div class="flex flex-col items-center gap-6 my-12 text-5xl">
