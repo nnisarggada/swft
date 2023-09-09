@@ -28,6 +28,7 @@ ALLOWED_EXTENSIONS = {
 }
 MAX_CONTENT_LENGTH = 64 * 1024 * 1024  # 64MB
 MAX_DEL_TIME = 24 * 60 * 60  # 24 hours in seconds
+
 # -------------------------------------------------------------------
 
 

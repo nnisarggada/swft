@@ -10,6 +10,7 @@
       function clearInputs() {
         document.getElementById("file").value = "";
         document.getElementById("link").value = "";
+        document.getElementById("time").value = "1800";
       }
       function validateForm() {
         var fileInput = document.getElementById("file");
@@ -67,6 +68,24 @@
             style="border-bottom: 1px solid white"
           />
         </div>
+      </div>
+      <div class="flex items-center gap-4 text-5xl">
+        <label for="expiry">Expiry:</label>
+        <select
+          name="time"
+          id="time"
+          class="appearance-none bg-gray-800 text-white rounded-lg w-full focus:outline-none p-4"
+        >
+          <option value="60">1 min</option>
+          <option value="300">5 mins</option>
+          <option value="600">10 mins</option>
+          <option value="900">15 mins</option>
+          <option value="1800" selected>30 mins</option>
+          <option value="3600">1 hr</option>
+          <option value="10800">3 hrs</option>
+          <option value="43200">12 hrs</option>
+          <option value="86400">1 day</option>
+        </select>
       </div>
       <div>
         <input
