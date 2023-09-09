@@ -125,8 +125,7 @@ def upload_file():
         clickable_link = f'\033]8;;{link}\033\\{link}\033]8;;\033\\'
 
         # Store the file information along with its deletion time
-        files_managed[str(custom_link)] = (filename, del_time)
-        print(files_managed)
+        files_managed[str(custom_link).lower()] = (filename, del_time)
 
         user_agent = request.headers.get('User-Agent')
         if 'curl' in user_agent.lower() or 'wget' in user_agent.lower():
@@ -140,7 +139,6 @@ def upload_file():
 @app.route('/<link>', methods=['GET'])
 def share_file(link):
     if link not in files_managed:
-        print(link)
         return "Invalid link\n", 400
     return send_from_directory(app.config['UPLOAD_FOLDER'], files_managed[link][0], as_attachment=True)
 
