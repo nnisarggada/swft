@@ -11,7 +11,7 @@ import json
 
 PORT = 80 # Port that the app will run on
 URL = "localhost" # Url of the hosted app
-TEMP_FOLDER = "/home/nnisarggada/GitRepos/swft/share_temp" # Folder where the files will stored temporarily
+TEMP_FOLDER = "/home/nnisarggada/swft/share_temp" # Folder where the files will stored temporarily
 DEFAULT_DEL_TIME = 1800 # Time until files will be deleted in seconds
 ALLOWED_EXTENSIONS = {
     'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif',  # Images and Documents

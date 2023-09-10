@@ -1,11 +1,14 @@
 <!doctype html>
 <html>
   <head>
-    <title>SWFT | File Upload</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
-      rel="stylesheet"
-    />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SWFT | Upload File</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script
+      src="https://kit.fontawesome.com/0b92670209.js"
+      crossorigin="anonymous"
+    ></script>
     <script>
       function clearInputs() {
         document.getElementById("file").value = "";
@@ -19,96 +22,117 @@
           alert("Please select a file.");
           return false;
         }
-
         return true;
-      }
-      function showFileUploaded() {
-        alert("File uploaded successfully!");
       }
       window.onload = clearInputs;
     </script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              poppins: ["Poppins"],
+            },
+          },
+        },
+      };
+    </script>
   </head>
 
-  <body>
+  <body class="bg-neutral-950 text-white font-poppins">
+    <nav
+      class="absolute top-0 left-0 w-screen h-20 bg-neutral-900 flex items-center justify-between p-4"
+    >
+      <a href="/" class="text-4xl font-bold"> 🦅 SWFT </a>
+      <a
+        href="https://github.com/nnisarggada/swft"
+        target="_blank"
+        class="text-4xl"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </nav>
+
     <div
-      class="fixed top-0 left-0 w-screen h-24 flex justify-center items-center text-6xl font-black text-center bg-gray-800 text-white p-4"
+      class="w-screen h-screen flex flex-col items-center justify-center gap-6 p-4"
     >
-      SWFT
-    </div>
-    <form
-      method="POST"
-      action="/upload"
-      enctype="multipart/form-data"
-      class="w-full h-screen bg-gray-900 text-white flex flex-col items-center justify-center gap-12 text-5xl p-12"
-      onsubmit="return validateForm()"
-    >
-      <h1 class="text-8xl font-semibold mb-24">Upload a File</h1>
-      <div>
-        <label
-          for="file"
-          class="bg-gray-500 text-white py-4 px-6 rounded-lg hover:bg-gray-600 cursor-pointer"
-        >
-          Select a file
-        </label>
-        <input
-          type="file"
-          name="file"
-          id="file"
-          style="display: none"
-          required
-          onchange="showFileUploaded()"
-        />
-      </div>
-      <div class="flex flex-col items-center gap-6 my-12 text-5xl">
-        <label for="link" class="block">Custom link (optional):</label>
-        <div class="flex">
-          <span> {{ full_url }}/</span>
+      <h1 class="text-3xl">Upload a file</h1>
+      <form
+        method="POST"
+        action="/upload"
+        enctype="multipart/form-data"
+        onsubmit="return validateForm()"
+        class="w-full flex flex-col gap-4 p-4"
+      >
+        <div class="flex flex-col gap-2">
+          <label for="file" class="font-bold"> Select a file </label>
           <input
-            type="text"
-            name="link"
-            id="link"
-            value=""
-            class="inline-block bg-gray-900 text-white rounded w-full focus:outline-none"
-            style="border-bottom: 1px solid white"
+            type="file"
+            name="file"
+            id="file"
+            required
+            class="w-full h-full file:bg-neutral-500 file:text-white file:outline-none file:border-none file:px-4 file:py-2 file:rounded-md file:font-semibold file:mr-6 hover:file:cursor-pointer"
           />
         </div>
-      </div>
-      <div class="flex items-center gap-4 text-5xl">
-        <label for="expiry">Expiry:</label>
-        <select
-          name="time"
-          id="time"
-          class="appearance-none bg-gray-800 text-white rounded-lg w-full focus:outline-none p-4"
-        >
-          <option value="60">1 min</option>
-          <option value="300">5 mins</option>
-          <option value="600">10 mins</option>
-          <option value="900">15 mins</option>
-          <option value="1800" selected>30 mins</option>
-          <option value="3600">1 hr</option>
-          <option value="10800">3 hrs</option>
-          <option value="43200">12 hrs</option>
-          <option value="86400">1 day</option>
-        </select>
-      </div>
-      <div>
-        <input
-          type="submit"
-          value="Share"
-          class="bg-blue-500 text-white py-4 px-6 rounded-lg hover:bg-blue-600 cursor-pointer"
-        />
-      </div>
-    </form>
-    <div
-      class="fixed bottom-0 left-0 w-screen h-20 flex justify-center items-center text-xl text-center bg-gray-800 text-white p-2 mt-12"
-    >
-      Made with ❣️ by &nbsp;
-      <a
-        href="https://nnisarg.in"
-        target="_blank"
-        class="underline text-blue-500"
-        >Nnisarg Gada</a
-      >
+        <div class="flex flex-col gap-2">
+          <label for="link" class="font-bold"> Custom link (optional): </label>
+          <div class="flex items-center border border-white rounded-md p-2">
+            <span>{{ full_url }}/</span>
+            <input
+              type="text"
+              name="link"
+              id="link"
+              value=""
+              class="w-full bg-neutral-950 text-white focus:outline-none"
+            />
+          </div>
+        </div>
+        <div class="flex flex-col gap-2">
+          <label for="time" class="font-bold"> Delete after: </label>
+          <div>
+            <select
+              name="time"
+              id="time"
+              class="w-fit bg-neutral-500 font-bold appearance-none text-white rounded-md p-2 px-4"
+            >
+              <option value="60">1 min</option>
+              <option value="300">5 mins</option>
+              <option value="600">10 mins</option>
+              <option value="900">15 mins</option>
+              <option value="1800" selected>30 mins</option>
+              <option value="3600">1 hr</option>
+              <option value="10800">3 hrs</option>
+              <option value="43200">12 hrs</option>
+              <option value="86400">1 day</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <input
+            type="submit"
+            value="Upload"
+            class="bg-blue-500 text-xl text-white font-bold py-2 px-4 rounded-lg cursor-pointer mt-4"
+          />
+        </div>
+      </form>
     </div>
+
+    <footer
+      class="absolute bottom-0 left-0 w-screen h-12 bg-neutral-900 drop-shadow-2xl backdrop-opacity-10 flex items-center justify-center p-4"
+    >
+      <span class="text-sm">
+        Made with ❤️ by
+        <a
+          class="text-rose-500 underline hover:no-underline"
+          href="https://nnisarg.in"
+        >
+          Nnisarg Gada
+        </a>
+      </span>
+    </footer>
   </body>
 </html>

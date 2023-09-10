@@ -1,11 +1,14 @@
 <!doctype html>
 <html>
   <head>
-    <title>SWFT | File Shared</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
-      rel="stylesheet"
-    />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SWFT | Share File</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script
+      src="https://kit.fontawesome.com/0b92670209.js"
+      crossorigin="anonymous"
+    ></script>
     <script>
       function copyToClipboard() {
         var link = document.getElementById("file-link");
@@ -37,57 +40,67 @@
         }
       }
     </script>
-    <style>
-      .share-button {
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        padding: 10px 20px;
-        cursor: pointer;
-        margin-top: 16px;
-      }
-    </style>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              poppins: ["Poppins"],
+            },
+          },
+        },
+      };
+    </script>
   </head>
-  <body
-    class="bg-gray-900 text-white text-5xl w-screen h-screen flex flex-col items-center justify-center gap-12 p-12"
-  >
-    <div
-      class="fixed top-0 left-0 w-screen h-24 flex justify-center items-center text-6xl font-black text-center bg-gray-800 text-white p-4"
+
+  <body class="bg-neutral-950 text-white font-poppins">
+    <nav
+      class="absolute top-0 left-0 w-screen h-20 bg-neutral-900 flex items-center justify-between p-4"
     >
-      SWFT
-    </div>
-    <h1 class="text-8xl font-semibold mb-24">File Shared</h1>
-    <p>Share this link:</p>
-    <a
-      class="text-blue-100 italic truncate max-w-full p-2"
-      href="{{ link }}"
-      id="file-link"
-      target="_blank"
-    >
-      {{ url }}/{{ link }}
-    </a>
-    <button
-      class="bg-gray-500 text-white py-4 px-6 rounded-lg hover:bg-gray-600 cursor-pointer"
-      onclick="copyToClipboard()"
-    >
-      Copy to Clipboard
-    </button>
-    <button
-      class="share-button bg-blue-500 text-white py-4 px-6 rounded-lg hover:bg-blue-600 cursor-pointer"
-      onclick="shareFile()"
-    >
-      Share
-    </button>
-    <div
-      class="fixed bottom-0 left-0 w-screen h-20 flex justify-center items-center text-xl text-center bg-gray-800 text-white p-2 mt-12"
-    >
-      Made with ❣️ by &nbsp;
+      <a href="/" class="text-4xl font-bold"> 🦅 SWFT </a>
       <a
-        href="https://nnisarg.in"
+        href="https://github.com/nnisarggada/swft"
         target="_blank"
-        class="underline text-blue-500"
-        >Nnisarg Gada</a
+        class="text-4xl"
       >
+        <i class="fab fa-github"></i>
+      </a>
+    </nav>
+
+    <div
+      class="w-screen h-screen flex flex-col items-center justify-center gap-6 p-4"
+    >
+      <h1 class="text-5xl mb-12">Share File</h1>
+      <div class="flex items-center gap-4">
+        <a
+          id="file-link"
+          href="{{ link }}"
+          target="_blank"
+          class="text-2xl italic underline"
+        >
+          {{ url }}/{{ link }}</a
+        >
+        <i class="fas fa-copy text-xl" onclick="copyToClipboard()"></i>
+        <i class="fas fa-share text-xl" onclick="shareFile()"></i>
+      </div>
     </div>
+
+    <footer
+      class="absolute bottom-0 left-0 w-screen h-12 bg-neutral-900 drop-shadow-2xl backdrop-opacity-10 flex items-center justify-center p-4"
+    >
+      <span class="text-sm">
+        Made with ❤️ by
+        <a
+          class="text-rose-500 underline hover:no-underline"
+          href="https://nnisarg.in"
+        >
+          Nnisarg Gada
+        </a>
+      </span>
+    </footer>
   </body>
 </html>
