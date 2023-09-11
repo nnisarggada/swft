@@ -77,16 +77,14 @@
       class="w-screen max-w-2xl h-screen flex flex-col items-center justify-center gap-6 p-4"
     >
       <h1 class="text-5xl mb-12">Share File</h1>
-      <div class="w-full flex items-center gap-4 p-4">
-        <a
-          id="file-link"
-          href="{{ link }}"
-          target="_blank"
-          class="w-full text-2xl italic underline truncate"
-        >
-          {{ url }}/{{ link }}</a
-        >
-      </div>
+      <a
+        id="file-link"
+        href="{{ link }}"
+        target="_blank"
+        class="w-full text-center text-2xl italic underline truncate"
+      >
+        {{ url }}/{{ link }}</a
+      >
       <div class="flex items-center gap-6">
         <i class="fas fa-copy text-xl" onclick="copyToClipboard()"></i>
         <i class="fas fa-share text-xl" onclick="shareFile()"></i>
