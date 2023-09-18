@@ -28,6 +28,9 @@ git clone https://github.com/nnisarggada/swft
 # Navigate to the project directory
 cd swft
 
+#Make a directory for temporary storage
+mkdir share_temp
+
 # Create a Python virtual environment and activate it
 python -m venv env
 source env/bin/activate
@@ -38,13 +41,28 @@ pip install -r requirements.txt
 
 ### Configuration
 
-1. Edit the SWFT configuration in the `app.py` file to customize settings such as the port, URL, folder for storing files, and the time until files are deleted.
+1. Edit the SWFT configuration in the `main.py` file to customize settings such as the port, URL, folder for storing files, and the time until files are deleted.
 
    ```python
-   port = 80  # Port that the app will run on
-   url = "localhost"  # URL of the hosted app
-   folder = "/home/nnisarggada/swft/share_temp"  # Folder where files will be stored temporarily
-   del_time = 1800  # Time until files will be deleted in seconds
+   PORT = 80 # Port that the app will run on
+   URL = "localhost" # Url of the hosted app
+   TEMP_FOLDER = "/home/nnisarggada/swft/share_temp" # Folder where the files will stored temporarily
+   DEFAULT_DEL_TIME = 1800 # Time until files will be deleted in seconds
+   ALLOWED_EXTENSIONS = {
+       'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif',  # Images and Documents
+       'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',  # Office Documents
+       'zip', 'rar', 'tar', 'gz',  # Compressed Files
+       'mp3', 'wav', 'ogg', 'flac',  # Audio Files
+       'mp4', 'mov', 'avi', 'mkv',  # Video Files
+       'csv', 'tsv',  # Data Files
+       'html', 'htm', 'xml', 'json',  # Web Formats
+       'css', 'js', 'py', 'java', 'cpp',  # Code Files
+       'txt', 'log', 'ini', 'cfg',  # Config and Text Files
+       'md', 'markdown', 'rst',  # Markup Languages
+       'sql', 'db', 'sqlite', 'dbf',  # Database Files
+   }
+   MAX_CONTENT_LENGTH = 64 * 1024 * 1024  # 64MB
+   MAX_DEL_TIME = 24 * 60 * 60  # 24 hours in seconds
    ```
 
 ### Running the App
@@ -79,9 +97,9 @@ pip install -r requirements.txt
    - SWFT supports sharing files using command-line tools like curl or wget. For example,
      
      ```bash
-     curl -X POST -F "file=@/path/to/file" -F "link=my-secret-file" http://localhost:80/upload
+     curl -X POST -F "file=@/path/to/file" -F "link=my-secret-file" -F "time=1800" http://localhost:80/upload
      ```
-     This will give a sharable URL to the file like `http://localhost:80/my-secret-file`
+     This will give a sharable URL to the `file` like `http://localhost:80/my-secret-file` that will get deleted after `1800` seconds
 
 ## License
 
