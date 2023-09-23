@@ -43,35 +43,25 @@ pip install -r requirements.txt
 
 1. Edit the SWFT configuration in the `main.py` file to customize settings such as the port, URL, folder for storing files, and the time until files are deleted.
 
-   ```python
-   PORT = 80 # Port that the app will run on
-   URL = "localhost" # Url of the hosted app
-   TEMP_FOLDER = "/home/nnisarggada/swft/share_temp" # Folder where the files will stored temporarily
-   DEFAULT_DEL_TIME = 1800 # Time until files will be deleted in seconds
-   ALLOWED_EXTENSIONS = {
-       'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif',  # Images and Documents
-       'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',  # Office Documents
-       'zip', 'rar', 'tar', 'gz',  # Compressed Files
-       'mp3', 'wav', 'ogg', 'flac',  # Audio Files
-       'mp4', 'mov', 'avi', 'mkv',  # Video Files
-       'csv', 'tsv',  # Data Files
-       'html', 'htm', 'xml', 'json',  # Web Formats
-       'css', 'js', 'py', 'java', 'cpp',  # Code Files
-       'txt', 'log', 'ini', 'cfg',  # Config and Text Files
-       'md', 'markdown', 'rst',  # Markup Languages
-       'sql', 'db', 'sqlite', 'dbf',  # Database Files
-   }
-   MAX_CONTENT_LENGTH = 64 * 1024 * 1024  # 64MB
-   MAX_DEL_TIME = 24 * 60 * 60  # 24 hours in seconds
-   ```
+```python
+
+URL = "localhost" # Url of the hosted app
+TEMP_FOLDER = "/home/nnisarggada/GitRepos/swft/share_temp" # Folder where the files will stored temporarily
+MAX_TEMP_FOLDER_SIZE = 50 _ 1024 _ 1024 # Maximum size of the temporary folder in bytes (50MB)
+DEFAULT_DEL_TIME = 1800 # Time until files will be deleted in seconds (30 minutes)
+MAX_CONTENT_LENGTH = 64 _ 1024 _ 1024 # Maximum file size allowed in bytes (64MB)
+MAX_DEL_TIME = 24 _ 60 _ 60 # Maximum time until files will be deleted in seconds (24 hours)
+```
 
 ### Running the App
 
 1. Run the SWFT app with sudo (to give permissions):
 
-   ```bash
-   sudo python main.py
-   ```
+```bash
+sudo gunicorn -b 0.0.0.0:80 main:app
+```
+
+Here, `80` is the port on which the app will run.
 
 2. Access the SWFT web interface in your web browser:
 
@@ -82,23 +72,28 @@ pip install -r requirements.txt
 ### Usage
 
 1. Upload a File:
+
    - Click "Select a file" to choose a file from your local storage.
    - Optionally, provide a custom link name.
    - Click "Share" to upload the file and get a shareable link.
 
 2. Share a File:
+
    - Use the provided shareable link to access the uploaded file.
    - Customize links for easier sharing.
 
 3. Delete Files:
+
    - Uploaded files are automatically deleted after the specified time.
 
 4. Command-Line Usage (curl/wget):
+
    - SWFT supports sharing files using command-line tools like curl or wget. For example,
-     
+
      ```bash
      curl -X POST -F "file=@/path/to/file" -F "link=my-secret-file" -F "time=1800" http://localhost:80/upload
      ```
+
      This will give a sharable URL to the `file` like `http://localhost:80/my-secret-file` that will get deleted after `1800` seconds
 
 ## License

@@ -1,5 +1,4 @@
 from flask import Flask, request, render_template, send_from_directory, make_response
-from werkzeug.utils import secure_filename
 import os
 import time
 import threading
@@ -9,25 +8,12 @@ import json
 # The following variables need to be changed before running the app:
 # -------------------------------------------------------------------
 
-PORT = 80 # Port that the app will run on
 URL = "localhost" # Url of the hosted app
-TEMP_FOLDER = "/home/nnisarggada/swft/share_temp" # Folder where the files will stored temporarily
-DEFAULT_DEL_TIME = 1800 # Time until files will be deleted in seconds
-ALLOWED_EXTENSIONS = {
-    'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif',  # Images and Documents
-    'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',  # Office Documents
-    'zip', 'rar', 'tar', 'gz',  # Compressed Files
-    'mp3', 'wav', 'ogg', 'flac',  # Audio Files
-    'mp4', 'mov', 'avi', 'mkv',  # Video Files
-    'csv', 'tsv',  # Data Files
-    'html', 'htm', 'xml', 'json',  # Web Formats
-    'css', 'js', 'py', 'java', 'cpp',  # Code Files
-    'txt', 'log', 'ini', 'cfg',  # Config and Text Files
-    'md', 'markdown', 'rst',  # Markup Languages
-    'sql', 'db', 'sqlite', 'dbf',  # Database Files
-}
-MAX_CONTENT_LENGTH = 64 * 1024 * 1024  # 64MB
-MAX_DEL_TIME = 24 * 60 * 60  # 24 hours in seconds
+TEMP_FOLDER = "/home/nnisarggada/GitRepos/swft/share_temp" # Folder where the files will stored temporarily
+MAX_TEMP_FOLDER_SIZE = 50 * 1024 * 1024 # Maximum size of the temporary folder in bytes (50MB)
+DEFAULT_DEL_TIME = 1800 # Time until files will be deleted in seconds (30 minutes)
+MAX_CONTENT_LENGTH = 64 * 1024 * 1024  # Maximum file size allowed in bytes (64MB)
+MAX_DEL_TIME = 24 * 60 * 60  # Maximum time until files will be deleted in seconds (24 hours)
 
 # -------------------------------------------------------------------
 
@@ -47,9 +33,6 @@ def load_files_managed_from_file():
         with open('files_managed.json', 'r') as json_file:
             return json.load(json_file)
     return {}
-
-def is_allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def generate_unique_filename(filename):
     base, ext = os.path.splitext(filename)
@@ -83,6 +66,14 @@ file_management_thread = threading.Thread(target=delete_old_files)
 file_management_thread.daemon = True
 file_management_thread.start()
 
+def get_folder_size(path):
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(path):
+        for filename in filenames:
+            file_path = os.path.join(dirpath, filename)
+            total_size += os.path.getsize(file_path)
+    return total_size
+
 @app.route('/', methods=['GET'])
 def upload_page():
     return render_template('index.html', full_url=URL)
@@ -97,13 +88,18 @@ def upload_file():
     if uploaded_file.filename == '':
         return 'No selected file\n', 400
 
-    if not is_allowed_file(uploaded_file.filename):
-        return 'File type not allowed\n', 400
+    folder_path = app.config['UPLOAD_FOLDER']
+    folder_size_bytes = get_folder_size(folder_path)
+    file_size_bytes = int(request.headers['Content-Length'])
+
+
+    if (folder_size_bytes + file_size_bytes) >= MAX_TEMP_FOLDER_SIZE:
+        return 'Server Space Full :/\nTry again later\n', 400
 
     del_time = int(request.form.get('time', DEFAULT_DEL_TIME))
     del_time = min(del_time, MAX_DEL_TIME)
 
-    filename = secure_filename(generate_unique_filename(uploaded_file.filename))
+    filename = generate_unique_filename(uploaded_file.filename)
 
     custom_link = request.form.get('link', filename)
 
@@ -138,9 +134,6 @@ def upload_file():
 
 @app.route('/<link>', methods=['GET'])
 def share_file(link):
-    if link not in files_managed:
+    if link.lower() not in files_managed:
         return "Invalid link\n", 400
-    return send_from_directory(app.config['UPLOAD_FOLDER'], files_managed[link][0], as_attachment=True)
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=PORT)
+    return send_from_directory(app.config['UPLOAD_FOLDER'], files_managed[link.lower()][0], as_attachment=True)
