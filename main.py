@@ -10,7 +10,7 @@ import json
 
 URL = "localhost" # Url of the hosted app
 TEMP_FOLDER = os.path.join(os.getcwd(), "share_temp") # Folder where the files will stored temporarily
-MAX_TEMP_FOLDER_SIZE = 50 * 1024 * 1024 # Maximum size of the temporary folder in bytes (50MB)
+MAX_TEMP_FOLDER_SIZE = 50 * 1024 * 1024 * 1024 # Maximum size of the temporary folder in bytes (50GB)
 DEFAULT_DEL_TIME = 1800 # Time until files will be deleted in seconds (30 minutes)
 MAX_CONTENT_LENGTH = 64 * 1024 * 1024  # Maximum file size allowed in bytes (64MB)
 MAX_DEL_TIME = 24 * 60 * 60  # Maximum time until files will be deleted in seconds (24 hours)
