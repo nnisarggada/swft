@@ -107,7 +107,7 @@ def upload_file():
     if custom_link == "":
         custom_link = f"{filename}"
 
-    if custom_link in files_managed or custom_link == "upload" or custom_link == "qr":
+    if custom_link in files_managed or custom_link == "upload":
         return f"Link {custom_link} already exists\n", 400
 
 
