@@ -47,10 +47,10 @@ pip install -r requirements.txt
 
 URL = "localhost" # Url of the hosted app
 TEMP_FOLDER = "/home/nnisarggada/GitRepos/swft/share_temp" # Folder where the files will stored temporarily
-MAX_TEMP_FOLDER_SIZE = 50 _ 1024 _ 1024 # Maximum size of the temporary folder in bytes (50MB)
+MAX_TEMP_FOLDER_SIZE = 50 * 1024 * 1024 # Maximum size of the temporary folder in bytes (50MB)
 DEFAULT_DEL_TIME = 1800 # Time until files will be deleted in seconds (30 minutes)
-MAX_CONTENT_LENGTH = 64 _ 1024 _ 1024 # Maximum file size allowed in bytes (64MB)
-MAX_DEL_TIME = 24 _ 60 _ 60 # Maximum time until files will be deleted in seconds (24 hours)
+MAX_CONTENT_LENGTH = 64 * 1024 * 1024 # Maximum file size allowed in bytes (64MB)
+MAX_DEL_TIME = 24 * 60 * 60 # Maximum time until files will be deleted in seconds (24 hours)
 ```
 
 ### Running the App
