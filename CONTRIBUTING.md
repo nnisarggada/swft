@@ -14,8 +14,6 @@ Thank you for considering contributing to SWFT! We appreciate your interest in m
   - [Installation](#installation)
   - [Configuration](#configuration)
   - [Running the App](#running-the-app)
-- [Usage](#usage)
-- [License](#license)
 
 ## Code of Conduct
 
@@ -104,7 +102,3 @@ sudo gunicorn -b 0.0.0.0:80 main:app
 ```
 
 Here, `80` is the port on which the app will run. You can access the SWFT web interface in your web browser at http://localhost:80.
-
-## Code of Conduct
-
-We maintain a [Code of Conduct](CODE_OF_CONDUCT.md) to ensure a welcoming and inclusive environment for all contributors and users.
