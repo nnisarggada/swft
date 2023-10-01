@@ -105,34 +105,6 @@ sudo gunicorn -b 0.0.0.0:80 main:app
 
 Here, `80` is the port on which the app will run. You can access the SWFT web interface in your web browser at http://localhost:80.
 
-## Usage
+## Code of Conduct
 
-You can use SWFT to perform the following actions:
-
-### Upload a File
-
-1. Click "Select a file" to choose a file from your local storage.
-2. Optionally, provide a custom link name.
-3. Click "Share" to upload the file and get a shareable link.
-
-### Share a File
-
-Use the provided shareable link to access the uploaded file. Customize links for easier sharing.
-
-### Delete Files
-
-Uploaded files are automatically deleted after the specified time.
-
-### Command-Line Usage (curl/wget)
-
-SWFT supports sharing files using command-line tools like curl or wget. For example:
-
-```bash
-curl -X POST -F "file=@/path/to/file" -F "link=my-secret-file" -F "time=1800" http://localhost:80/upload
-```
-
-This will give a sharable URL to the file like http://localhost:80/my-secret-file that will get deleted after 1800 seconds.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+We maintain a [Code of Conduct](CODE_OF_CONDUCT.md) to ensure a welcoming and inclusive environment for all contributors and users.
