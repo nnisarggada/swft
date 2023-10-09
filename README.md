@@ -53,7 +53,7 @@ Edit the SWFT configuration in the `main.py` file to customize settings such as 
 
 ```python
 URL = "localhost"  # Url of the hosted app
-TEMP_FOLDER = "/home/nnisarggada/GitRepos/swft/share_temp"  # Folder where the files will be stored temporarily
+TEMP_FOLDER = os.path.join(os.getcwd(), "share_temp") # Folder where the files will stored temporarily
 MAX_TEMP_FOLDER_SIZE = 50 * 1024 * 1024  # Maximum size of the temporary folder in bytes (50MB)
 DEFAULT_DEL_TIME = 1800  # Time until files will be deleted in seconds (30 minutes)
 MAX_CONTENT_LENGTH = 64 * 1024 * 1024  # Maximum file size allowed in bytes (64MB)
@@ -62,10 +62,10 @@ MAX_DEL_TIME = 24 * 60 * 60  # Maximum time until files will be deleted in secon
 
 ### Running the App
 
-Run the SWFT app with sudo (to give permissions):
+Run the SWFT app by specifying the port number:
 
 ```bash
-sudo gunicorn -b 0.0.0.0:80 main:app
+gunicorn -b 0.0.0.0:3000 main:app
 ```
 
 Here, `80` is the port on which the app will run. You can access the SWFT web interface in your web browser at http://localhost:80.
