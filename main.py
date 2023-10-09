@@ -137,3 +137,7 @@ def share_file(link):
     if link.lower() not in files_managed:
         return "Invalid link\n", 400
     return send_from_directory(app.config['UPLOAD_FOLDER'], files_managed[link.lower()][0], as_attachment=True)
+
+@app.route('/about', methods=['GET'])
+def about():
+    return render_template('about.html', full_url=URL)
