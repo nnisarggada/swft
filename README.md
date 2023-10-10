@@ -53,7 +53,6 @@ Edit the SWFT configuration in the `main.py` file to customize settings such as 
 
 ```python
 URL = "localhost"  # Url of the hosted app
-PORT = 5000  # Port of the hosted app
 TEMP_FOLDER = os.path.join(os.getcwd(), "share_temp") # Folder where the files will stored temporarily
 MAX_TEMP_FOLDER_SIZE = 50 * 1024 * 1024  # Maximum size of the temporary folder in bytes (50MB)
 DEFAULT_DEL_TIME = 1800  # Time until files will be deleted in seconds (30 minutes)
@@ -63,11 +62,13 @@ MAX_DEL_TIME = 24 * 60 * 60  # Maximum time until files will be deleted in secon
 
 ### Running the App
 
-Run the SWFT app:
+Run the SWFT app by specifying the port number:
 
 ```bash
-python main.py
+gunicorn -b 0.0.0.0:5000 main:app
 ```
+
+Here, `5000` is the port on which the app will run. You can access the SWFT web interface in your web browser at http://localhost:5000.
 
 ## Usage
 

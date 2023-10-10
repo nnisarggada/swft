@@ -9,7 +9,6 @@ import json
 # -------------------------------------------------------------------
 
 URL = "localhost" # Url of the hosted app
-PORT = 5000 # Port of the hosted app
 TEMP_FOLDER = os.path.join(os.getcwd(), "share_temp") # Folder where the files will stored temporarily
 MAX_TEMP_FOLDER_SIZE = 50 * 1024 * 1024 * 1024 # Maximum size of the temporary folder in bytes (50GB)
 DEFAULT_DEL_TIME = 1800 # Time until files will be deleted in seconds (30 minutes)
@@ -22,18 +21,17 @@ MAX_DEL_TIME = 24 * 60 * 60  # Maximum time until files will be deleted in secon
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = TEMP_FOLDER
 
-# Dictionary to track files and their individual deletion times
-files_managed = {}
-
-def save_files_managed_to_file():
-    with open('files_managed.json', 'w') as json_file:
-        json.dump(files_managed, json_file)
-
 def load_files_managed_from_file():
     if os.path.exists('files_managed.json'):
         with open('files_managed.json', 'r') as json_file:
             return json.load(json_file)
     return {}
+
+files_managed = load_files_managed_from_file()
+
+def save_files_managed_to_file():
+    with open('files_managed.json', 'w') as json_file:
+        json.dump(files_managed, json_file)
 
 def generate_unique_filename(filename):
     base, ext = os.path.splitext(filename)
@@ -144,6 +142,3 @@ def share_file(link):
 @app.route('/about', methods=['GET'])
 def about():
     return render_template('about.html', full_url=URL)
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=PORT, debug=True)
