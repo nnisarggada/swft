@@ -9,6 +9,7 @@ import json
 # -------------------------------------------------------------------
 
 URL = "localhost" # Url of the hosted app
+PORT = 5000 # Port of the hosted app
 TEMP_FOLDER = os.path.join(os.getcwd(), "share_temp") # Folder where the files will stored temporarily
 MAX_TEMP_FOLDER_SIZE = 50 * 1024 * 1024 * 1024 # Maximum size of the temporary folder in bytes (50GB)
 DEFAULT_DEL_TIME = 1800 # Time until files will be deleted in seconds (30 minutes)
@@ -107,7 +108,9 @@ def upload_file():
     if custom_link == "":
         custom_link = f"{filename}"
 
-    if custom_link in files_managed or custom_link == "upload":
+    cusom_link = custom_link.lower()
+
+    if custom_link in files_managed or custom_link == "upload" or custom_link == "about":
         return f"Link {custom_link} already exists\n", 400
 
 
@@ -141,3 +144,6 @@ def share_file(link):
 @app.route('/about', methods=['GET'])
 def about():
     return render_template('about.html', full_url=URL)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=PORT, debug=True)
