@@ -122,7 +122,7 @@ def upload_file():
 
         user_agent = request.headers.get('User-Agent')
         if 'curl' in user_agent.lower() or 'wget' in user_agent.lower():
-            return "https://" + URL + "/" + custom_link
+            return "https://" + URL + "/" + custom_link + "\n"
         else:
             return render_template('shared.html', url=URL, link=custom_link)
 
