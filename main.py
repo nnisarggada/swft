@@ -118,15 +118,13 @@ def upload_file():
     try:
         uploaded_file.save(file_path)
 
-        link = f'{URL}/{custom_link}\n'
-        clickable_link = f'\033]8;;{link}\033\\{link}\033]8;;\033\\'
 
         # Store the file information along with its deletion time
         files_managed[str(custom_link).lower()] = (filename, del_time)
 
         user_agent = request.headers.get('User-Agent')
         if 'curl' in user_agent.lower() or 'wget' in user_agent.lower():
-            return clickable_link
+            return "https://" + URL + "/" + link
         else:
             return render_template('shared.html', url=URL, link=custom_link)
 
