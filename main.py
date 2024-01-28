@@ -77,6 +77,7 @@ def get_folder_size(path):
 def upload_page():
     return render_template('index.html', full_url=URL)
 
+@app.route('/', methods=['POST'])
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
@@ -138,3 +139,6 @@ def share_file(link):
 @app.route('/about', methods=['GET'])
 def about():
     return render_template('about.html', full_url=URL)
+
+if __name__ == '__main__':
+    app.run(debug=True)
