@@ -28,12 +28,6 @@ git clone https://github.com/nnisarggada/swft
 cd swft
 ```
 
-Make a directory for temporary storage:
-
-```bash
-mkdir share_temp
-```
-
 Create a Python virtual environment and activate it:
 
 ```bash
@@ -93,7 +87,7 @@ Uploaded files are automatically deleted after the specified time.
 SWFT supports sharing files using command-line tools like curl or wget. For example:
 
 ```bash
-curl -X POST -F "file=@/path/to/file" -F "link=my-secret-file" -F "time=1800" http://localhost:80/upload
+curl -F "file=@/path/to/file" -F "link=my-secret-file" -F "time=1800" http://localhost:80/
 ```
 
 This will give a sharable URL to the file like http://localhost:80/my-secret-file that will get deleted after 1800 seconds.

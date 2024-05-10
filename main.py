@@ -21,6 +21,9 @@ MAX_DEL_TIME = 24 * 60 * 60  # Maximum time until files will be deleted in secon
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = TEMP_FOLDER
 
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
+
 def load_files_managed_from_file():
     if os.path.exists('files_managed.json'):
         with open('files_managed.json', 'r') as json_file:
@@ -78,7 +81,6 @@ def upload_page():
     return render_template('index.html', full_url=URL)
 
 @app.route('/', methods=['POST'])
-@app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
         return 'No file provided\n', 400
@@ -109,7 +111,7 @@ def upload_file():
 
     cusom_link = custom_link.lower()
 
-    if custom_link in files_managed or custom_link == "upload" or custom_link == "about":
+    if custom_link in files_managed or custom_link == "about":
         return f"Link {custom_link} already exists\n", 400
 
 
