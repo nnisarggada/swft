@@ -144,7 +144,7 @@ def upload_file():
 
         files_managed[custom_link] = (filename, del_time)
 
-        client_ip = request.remote_addr
+        client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
         timestamp = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
         log_content = f"{client_ip} {filename} {timestamp}\n"
         log_message(UPLOAD_LOG_FILE, log_content)
@@ -167,7 +167,7 @@ def share_file(link):
 
     link = link.lower()
 
-    client_ip = request.remote_addr
+    client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
     timestamp = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
     log_content = f"{client_ip} {link} {timestamp}\n"
     log_message(ACCESS_LOG_FILE, log_content)
