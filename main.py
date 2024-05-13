@@ -3,6 +3,7 @@ import os
 import time
 import threading
 import json
+from datetime import datetime
 
 # -------------------------------------------------------------------
 # The following variables need to be changed before running the app:
@@ -11,9 +12,12 @@ import json
 URL = "localhost" # Url of the hosted app
 TEMP_FOLDER = os.path.join(os.getcwd(), "share_temp") # Folder where the files will stored temporarily
 MAX_TEMP_FOLDER_SIZE = 50 * 1024 * 1024 * 1024 # Maximum size of the temporary folder in bytes (50GB)
-DEFAULT_DEL_TIME = 1800 # Time until files will be deleted in seconds (30 minutes)
-MAX_CONTENT_LENGTH = 64 * 1024 * 1024  # Maximum file size allowed in bytes (64MB)
+DEFAULT_DEL_TIME = 30 * 60 # Time until files will be deleted in seconds (30 minutes)
+MAX_CONTENT_LENGTH = 100 * 1024 * 1024  # Maximum file size allowed in bytes (100MB)
 MAX_DEL_TIME = 24 * 60 * 60  # Maximum time until files will be deleted in seconds (24 hours)
+UPLOAD_LOG_FILE = os.path.join(os.getcwd(), "upload.log") # Log file for uploads
+ACCESS_LOG_FILE = os.path.join(os.getcwd(), "access.log") # Log file for access (requests)
+MAX_LOG_ENTRIES = 500 # Maximum number of log entries for each log file
 
 # -------------------------------------------------------------------
 
@@ -37,6 +41,7 @@ def save_files_managed_to_file():
         json.dump(files_managed, json_file)
 
 def generate_unique_filename(filename):
+    filename = filename.replace(" ", "_")
     base, ext = os.path.splitext(filename)
     counter = 1
     while os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], filename)):
@@ -76,6 +81,21 @@ def get_folder_size(path):
             total_size += os.path.getsize(file_path)
     return total_size
 
+def log_message(logfile, content):
+
+    entries = []
+    if os.path.exists(logfile):
+        with open(logfile, 'r') as file:
+            entries = file.readlines()
+
+    entries.append(content)
+
+    if len(entries) > MAX_LOG_ENTRIES:
+        entries.pop(0)
+
+    with open(logfile, 'w') as file:
+        file.writelines(entries)
+
 @app.route('/', methods=['GET'])
 def upload_page():
     return render_template('index.html', full_url=URL)
@@ -107,9 +127,10 @@ def upload_file():
 
 
     if custom_link == "":
-        custom_link = f"{filename}"
+        custom_link = filename
 
-    cusom_link = custom_link.lower()
+    custom_link = custom_link.lower()
+    custom_link = custom_link.replace(" ", "_")
 
     if custom_link in files_managed or custom_link == "about":
         return f"Link {custom_link} already exists\n", 400
@@ -121,7 +142,12 @@ def upload_file():
     try:
         uploaded_file.save(file_path)
 
-        files_managed[str(custom_link).lower()] = (filename, del_time)
+        files_managed[custom_link] = (filename, del_time)
+
+        client_ip = request.remote_addr
+        timestamp = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
+        log_content = f"{client_ip} {filename} {timestamp}\n"
+        log_message(UPLOAD_LOG_FILE, log_content)
 
         user_agent = request.headers.get('User-Agent')
         if 'curl' in user_agent.lower() or 'wget' in user_agent.lower():
@@ -132,15 +158,23 @@ def upload_file():
     except Exception as e:
         return f"Error: {e}\n", 500
 
-@app.route('/<link>', methods=['GET'])
-def share_file(link):
-    if link.lower() not in files_managed:
-        return "Invalid link\n", 400
-    return send_from_directory(app.config['UPLOAD_FOLDER'], files_managed[link.lower()][0], as_attachment=True)
-
 @app.route('/about', methods=['GET'])
 def about():
     return render_template('about.html', full_url=URL)
+
+@app.route('/<link>', methods=['GET'])
+def share_file(link):
+
+    link = link.lower()
+
+    client_ip = request.remote_addr
+    timestamp = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
+    log_content = f"{client_ip} {link} {timestamp}\n"
+    log_message(ACCESS_LOG_FILE, log_content)
+
+    if link not in files_managed:
+        return "Invalid link\n", 400
+    return send_from_directory(app.config['UPLOAD_FOLDER'], files_managed[link][0], as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=True)
