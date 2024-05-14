@@ -82,7 +82,6 @@ def get_folder_size(path):
     return total_size
 
 def log_message(logfile, content):
-
     entries = []
     if os.path.exists(logfile):
         with open(logfile, 'r') as file:
@@ -167,11 +166,6 @@ def upload_file():
 
         files_managed[custom_link] = (filename, del_time)
 
-        client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
-        timestamp = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
-        log_content = f"{client_ip} {filename} {timestamp}\n"
-        log_message(UPLOAD_LOG_FILE, log_content)
-
         user_agent = request.headers.get('User-Agent')
         if 'curl' in user_agent.lower() or 'wget' in user_agent.lower():
             return "https://" + URL + "/" + custom_link + "\n"
@@ -189,11 +183,6 @@ def about():
 def share_file(link):
 
     link = link.lower()
-
-    client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
-    timestamp = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
-    log_content = f"{client_ip} {link} {timestamp}\n"
-    log_message(ACCESS_LOG_FILE, log_content)
 
     if link not in files_managed:
         return "Invalid link\n", 400
