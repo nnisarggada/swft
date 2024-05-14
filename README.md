@@ -46,12 +46,21 @@ pip install -r requirements.txt
 Edit the SWFT configuration in the `main.py` file to customize settings such as the port, URL, folder for storing files, and the time until files are deleted. Modify the following variables as needed:
 
 ```python
-URL = "localhost"  # Url of the hosted app
+# -------------------------------------------------------------------
+# The following variables need to be changed before running the app:
+# -------------------------------------------------------------------
+
+URL = "localhost" # Url of the hosted app
 TEMP_FOLDER = os.path.join(os.getcwd(), "share_temp") # Folder where the files will stored temporarily
-MAX_TEMP_FOLDER_SIZE = 50 * 1024 * 1024  # Maximum size of the temporary folder in bytes (50MB)
-DEFAULT_DEL_TIME = 1800  # Time until files will be deleted in seconds (30 minutes)
-MAX_CONTENT_LENGTH = 64 * 1024 * 1024  # Maximum file size allowed in bytes (64MB)
+MAX_TEMP_FOLDER_SIZE = 50 * 1024 * 1024 * 1024 # Maximum size of the temporary folder in bytes (50GB)
+DEFAULT_DEL_TIME = 30 * 60 # Time until files will be deleted in seconds (30 minutes)
+MAX_CONTENT_LENGTH = 100 * 1024 * 1024  # Maximum file size allowed in bytes (100MB)
 MAX_DEL_TIME = 24 * 60 * 60  # Maximum time until files will be deleted in seconds (24 hours)
+UPLOAD_LOG_FILE = os.path.join(os.getcwd(), "upload.log") # Log file for uploads
+ACCESS_LOG_FILE = os.path.join(os.getcwd(), "access.log") # Log file for access (requests)
+MAX_LOG_ENTRIES = 500 # Maximum number of log entries for each log file
+
+# -------------------------------------------------------------------
 ```
 
 ### Running the App
@@ -87,14 +96,14 @@ Uploaded files are automatically deleted after the specified time.
 SWFT supports sharing files using command-line tools like curl or wget. For example:
 
 ```bash
-curl -F "file=@/path/to/file" -F "link=my-secret-file" -F "time=1800" http://localhost:80/
+curl -F "file=@/path/to/file" -F "link=my-secret-file" -F "time=1800" http://localhost:5000/
 ```
 
-This will give a sharable URL to the file like http://localhost:80/my-secret-file that will get deleted after 1800 seconds.
+This will give a sharable URL to the file like http://localhost:5000/my-secret-file that will get deleted after 1800 seconds.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU General Public License v3 - see the [LICENSE](LICENSE.md) file for details.
 
 ## Contributing
 
