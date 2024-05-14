@@ -166,11 +166,10 @@ def upload_file():
 
         files_managed[custom_link] = (filename, del_time)
 
-        user_agent = request.headers.get('User-Agent')
-        if 'curl' in user_agent.lower() or 'wget' in user_agent.lower():
-            return "https://" + URL + "/" + custom_link + "\n"
-        else:
+        if "html" in request.headers.get("Accept"):
             return render_template('shared.html', url=URL, link=custom_link)
+        else:
+            return "https://" + URL + "/" + custom_link
 
     except Exception as e:
         return f"Error: {e}\n", 500
