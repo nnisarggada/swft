@@ -96,6 +96,29 @@ def log_message(logfile, content):
     with open(logfile, 'w') as file:
         file.writelines(entries)
 
+@app.before_request
+def log_request():
+    remote_addr = request.headers.get('X-Forwarded-For', request.remote_addr)
+    user_agent = request.headers.get('User-Agent').replace("\n", " ").replace(" ", "-")
+    date = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
+    method = request.method
+    path = request.path
+    scheme = request.scheme
+
+    if method == 'GET':
+        log_content = f"{remote_addr} {user_agent} {date} {method} {path} {scheme}\n"
+        log_message(ACCESS_LOG_FILE, log_content)
+
+    elif method == 'POST':
+        filename = request.files['file'].filename.lower().replace(" ", "_")
+        link = request.form.get('link', filename)
+        if link == '':
+            link = filename
+        time = request.form.get('time', DEFAULT_DEL_TIME)
+
+        log_content = f"{remote_addr} {user_agent} {date} {method} {path} {scheme} {filename} {link} {time}\n"
+        log_message(UPLOAD_LOG_FILE, log_content)
+
 @app.route('/', methods=['GET'])
 def upload_page():
     return render_template('index.html', full_url=URL)
