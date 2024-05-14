@@ -186,7 +186,7 @@ def share_file(link):
 
     if link not in files_managed:
         return "Invalid link\n", 400
-    return send_from_directory(app.config['UPLOAD_FOLDER'], files_managed[link][0], as_attachment=True)
+    return send_from_directory(app.config['UPLOAD_FOLDER'], files_managed[link][0])
 
 if __name__ == '__main__':
     app.run(debug=True)
