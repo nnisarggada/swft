@@ -9,7 +9,7 @@ from datetime import datetime
 # The following variables need to be changed before running the app:
 # -------------------------------------------------------------------
 
-URL = "localhost" # Url of the hosted app
+URL = "share.nnisarg.in" # Url of the hosted app
 TEMP_FOLDER = os.path.join(os.getcwd(), "share_temp") # Folder where the files will stored temporarily
 MAX_TEMP_FOLDER_SIZE = 50 * 1024 * 1024 * 1024 # Maximum size of the temporary folder in bytes (50GB)
 DEFAULT_DEL_TIME = 30 * 60 # Time until files will be deleted in seconds (30 minutes)
@@ -82,18 +82,25 @@ def get_folder_size(path):
     return total_size
 
 def log_message(logfile, content):
-    entries = []
-    if os.path.exists(logfile):
-        with open(logfile, 'r') as file:
-            entries = file.readlines()
+    # Define a function to perform IO operations in a separate thread
+    def write_to_logfile():
+        # Append the new log entry to the file
+        with open(logfile, 'a') as file:
+            file.write(content + '\n')
 
-    entries.append(content)
+        # Check if the number of log entries exceeds the maximum limit
+        if os.path.exists(logfile):
+            with open(logfile, 'r') as file:
+                entries = file.readlines()
 
-    if len(entries) > MAX_LOG_ENTRIES:
-        entries.pop(0)
+            # Truncate the file if it exceeds the maximum log entries
+            if len(entries) > MAX_LOG_ENTRIES:
+                with open(logfile, 'w') as file:
+                    file.writelines(entries[-MAX_LOG_ENTRIES:])
 
-    with open(logfile, 'w') as file:
-        file.writelines(entries)
+    # Create and start a new thread to execute the IO operations
+    io_thread = threading.Thread(target=write_to_logfile)
+    io_thread.start()
 
 @app.before_request
 def log_request():
@@ -107,16 +114,6 @@ def log_request():
     if method == 'GET':
         log_content = f"{remote_addr} {user_agent} {date} {method} {path} {scheme}\n"
         log_message(ACCESS_LOG_FILE, log_content)
-
-    elif method == 'POST':
-        filename = request.files['file'].filename.lower().replace(" ", "_")
-        link = request.form.get('link', filename)
-        if link == '':
-            link = filename
-        time = request.form.get('time', DEFAULT_DEL_TIME)
-
-        log_content = f"{remote_addr} {user_agent} {date} {method} {path} {scheme} {filename} {link} {time}\n"
-        log_message(UPLOAD_LOG_FILE, log_content)
 
 @app.route('/', methods=['GET'])
 def upload_page():
@@ -166,10 +163,17 @@ def upload_file():
 
         files_managed[custom_link] = (filename, del_time)
 
+        remote_addr = request.headers.get('X-Forwarded-For', request.remote_addr)
+        user_agent = request.headers.get('User-Agent').replace("\n", " ").replace(" ", "-")
+        date = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
+        log_content = f"{remote_addr} {user_agent} {date} {filename} {custom_link} {del_time}\n"
+        log_message(UPLOAD_LOG_FILE, log_content)
+
         if "html" in request.headers.get("Accept"):
             return render_template('shared.html', url=URL, link=custom_link)
         else:
             return "https://" + URL + "/" + custom_link
+
 
     except Exception as e:
         return f"Error: {e}\n", 500
