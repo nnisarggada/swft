@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, render_template_string, send_from_directory, make_response
+from flask import Flask, request, render_template, send_from_directory, make_response
 import os
 import time
 import threading
@@ -26,13 +26,9 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = TEMP_FOLDER
 
 @app.route('/robots.txt')
-def robots_txt():
-    return """
-    User-agent: *
-    Disallow: /
-    Allow: /$
-    Allow: /about$
-    """
+@app.route('/sitemap.xml')
+def static_from_root():
+    return send_from_directory(app.static_folder, request.path[1:])
 
 @app.route('/sitemap.xml')
 def sitemap():
@@ -181,7 +177,7 @@ def upload_file():
     custom_link = custom_link.lower()
     custom_link = custom_link.replace(" ", "_")
 
-    invalid_links = ["about", "robots.txt", "shared"]
+    invalid_links = ["about", "robots.txt", "sitemap.xml", "shared"]
 
     if custom_link in files_managed or custom_link in invalid_links:
         return f"Link {custom_link} already exists\n", 400
