@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, send_from_directory, make_response
+from flask import Flask, request, render_template, render_template_string, send_from_directory, make_response
 import os
 import time
 import threading
