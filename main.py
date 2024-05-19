@@ -25,6 +25,37 @@ MAX_LOG_ENTRIES = 500 # Maximum number of log entries for each log file
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = TEMP_FOLDER
 
+@app.route('/robots.txt')
+def robots_txt():
+    return """
+    User-agent: *
+    Disallow: /
+    Allow: /$
+    Allow: /about$
+    """
+
+@app.route('/sitemap.xml')
+def sitemap():
+    # List of routes to include in the sitemap
+    routes = ['index', 'about']
+    
+    # XML string template
+    xml_template = """
+    <?xml version="1.0" encoding="UTF-8"?>
+    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+        {% for route in routes %}
+        <url>
+            <loc>{{ url_for(route) }}</loc>
+        </url>
+        {% endfor %}
+    </urlset>
+    """
+    
+    # Render the template with routes
+    xml_content = render_template_string(xml_template, routes=routes)
+    
+    return xml_content
+
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
@@ -144,19 +175,18 @@ def upload_file():
 
     custom_link = request.form.get('link', filename)
 
-
     if custom_link == "":
         custom_link = filename
 
     custom_link = custom_link.lower()
     custom_link = custom_link.replace(" ", "_")
 
-    if custom_link in files_managed or custom_link == "about":
+    invalid_links = ["about", "robots.txt", "shared"]
+
+    if custom_link in files_managed or custom_link in invalid_links:
         return f"Link {custom_link} already exists\n", 400
 
-
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-
 
     try:
         uploaded_file.save(file_path)
