@@ -20,6 +20,12 @@ ACCESS_LOG_FILE = os.path.join(os.getcwd(), "access.log") # Log file for access 
 MAX_LOG_ENTRIES = 500 # Maximum number of log entries for each log file
 
 # -------------------------------------------------------------------
+# DO NOT CHANGE ANYTHING BELOW THIS LINE UNLESS YOU KNOW WHAT YOU'RE DOING
+# -------------------------------------------------------------------
+
+IMG_EXTENSIONS = [".png", ".jpg", ".jpeg", ".gif", ".webp"]
+
+# -------------------------------------------------------------------
 
 
 app = Flask(__name__)
@@ -109,23 +115,18 @@ def get_folder_size(path):
     return total_size
 
 def log_message(logfile, content):
-    # Define a function to perform IO operations in a separate thread
     def write_to_logfile():
-        # Append the new log entry to the file
         with open(logfile, 'a') as file:
             file.write(content + '\n')
 
-        # Check if the number of log entries exceeds the maximum limit
         if os.path.exists(logfile):
             with open(logfile, 'r') as file:
                 entries = file.readlines()
 
-            # Truncate the file if it exceeds the maximum log entries
             if len(entries) > MAX_LOG_ENTRIES:
                 with open(logfile, 'w') as file:
                     file.writelines(entries[-MAX_LOG_ENTRIES:])
 
-    # Create and start a new thread to execute the IO operations
     io_thread = threading.Thread(target=write_to_logfile)
     io_thread.start()
 
@@ -200,7 +201,6 @@ def upload_file():
         else:
             return "https://" + URL + "/" + custom_link
 
-
     except Exception as e:
         return f"Error: {e}\n", 500
 
@@ -212,10 +212,15 @@ def about():
 def share_file(link):
 
     link = link.lower()
+    is_img = False
 
     if link not in files_managed:
         return "Invalid link\n", 400
-    return send_from_directory(app.config['UPLOAD_FOLDER'], files_managed[link][0])
+
+    _, ext = os.path.splitext(files_managed[link][0])
+    is_img = ext in IMG_EXTENSIONS
+
+    return send_from_directory(app.config['UPLOAD_FOLDER'], files_managed[link][0], as_attachment= not is_img)
 
 if __name__ == '__main__':
     app.run(debug=True)
