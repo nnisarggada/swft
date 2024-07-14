@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, send_from_directory, make_response
+from flask import Flask, request, render_template, render_template_string, send_from_directory
 import os
 import time
 import threading
@@ -63,6 +63,9 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 
 def load_files_managed_from_file():
     if os.path.exists('files_managed.json'):
+        if os.path.getsize('files_managed.json') == 0:
+            with open('files_managed.json', 'w') as json_file:
+                json_file.write('{}')
         with open('files_managed.json', 'r') as json_file:
             return json.load(json_file)
     return {}
