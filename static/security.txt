@@ -1,0 +1,1 @@
+If you would like to report a security issue, please open a new issue on github repo - https://github.com/nnisarggada/swft
