@@ -10,7 +10,6 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
-import os
 from dotenv import load_dotenv
 
 
@@ -78,10 +77,10 @@ def save_files_managed_to_file():
 
 # Split the string on the last dot to separate the extension
 def prevent_multiple_ext(s):
-    iter = s.count('.') - 1
-    if '.' in s:
+    iter = s.count(".") - 1
+    if "." in s:
         if iter > 0:
-            s.replace('.', '_')
+            s.replace(".", "_")
             iter -= 1       
         return s
     else:
@@ -94,7 +93,7 @@ def sanitize_string(input_string):
 
 def is_valid_email(email):
     # Basic regex pattern for validating email
-    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
     return re.match(pattern, email) is not None
 
 # Returns a unique filename after removing whitespaces and implementing a counter if the filename already exists
@@ -104,11 +103,11 @@ def generate_unique_filename(filename):
     base = sanitize_string(base)
     ext = prevent_multiple_ext(ext)
     counter = 1
+    filename = f"{base}{ext}"
     while os.path.exists(os.path.join(TEMP_FOLDER, filename)):
         filename = f"{base}_{counter}{ext}"
         counter += 1
-        return filename
-    return f"{base}{ext}"
+    return filename
 
 # Deletes files that have expired
 def delete_old_files():
@@ -179,22 +178,22 @@ def send_email(email_address, file_path):
 
         # Create the email message
         message = MIMEMultipart()
-        message['From'] = SMTP_USERNAME
-        message['To'] = email_address
-        message['Subject'] = f"File shared with you on {URL}"
+        message["From"] = SMTP_USERNAME
+        message["To"] = email_address
+        message["Subject"] = f"File shared with you on {URL}"
 
         body = f"Hello {email_address}, thank you for using our service at {URL}. The file you provided has been attached to this email!"
-        message.attach(MIMEText(body, 'plain'))
+        message.attach(MIMEText(body, "plain"))
 
         # Check if the file exists and attach it
         if os.path.exists(file_path):
-            with open(file_path, 'rb') as file:
-                attachment = MIMEBase('application', 'octet-stream')
+            with open(file_path, "rb") as file:
+                attachment = MIMEBase("application", "octet-stream")
                 attachment.set_payload(file.read())
             encoders.encode_base64(attachment)
             attachment.add_header(
-                'Content-Disposition',
-                f'attachment; filename={os.path.basename(file_path)}'
+                "Content-Disposition",
+                f"attachment; filename={os.path.basename(file_path)}"
             )
             message.attach(attachment)
         else:
