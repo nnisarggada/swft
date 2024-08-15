@@ -47,18 +47,22 @@ Edit the SWFT configuration in the `main.py` file to customize settings such as 
 
 ```python
 # -------------------------------------------------------------------
-# The following variables need to be changed before running the app:
+# The following .env file needs to be changed before running the app using following variables: [SMTP_x are optional to use for sending emails]
 # -------------------------------------------------------------------
 
-URL = "localhost" # Url of the hosted app
-TEMP_FOLDER = os.path.join(os.getcwd(), "share_temp") # Folder where the files will stored temporarily
-MAX_TEMP_FOLDER_SIZE = 50 * 1024 * 1024 * 1024 # Maximum size of the temporary folder in bytes (50GB)
-DEFAULT_DEL_TIME = 30 * 60 # Time until files will be deleted in seconds (30 minutes)
-MAX_CONTENT_LENGTH = 100 * 1024 * 1024  # Maximum file size allowed in bytes (100MB)
-MAX_DEL_TIME = 24 * 60 * 60  # Maximum time until files will be deleted in seconds (24 hours)
-UPLOAD_LOG_FILE = os.path.join(os.getcwd(), "upload.log") # Log file for uploads
-ACCESS_LOG_FILE = os.path.join(os.getcwd(), "access.log") # Log file for access (requests)
+URL = "share.example.com" # Url of the hosted app
+TEMP_FOLDER = "share_temp" # Folder where the files will stored temporarily
+MAX_TEMP_FOLDER_SIZE = 50 # Maximum size of the temporary folder in GB (50GB)
+DEFAULT_DEL_TIME = 3 # Time until files will be deleted in hours (3 hours)
+MAX_CONTENT_LENGTH = 100 # Maximum file size allowed in MB (100MB)
+MAX_DEL_TIME = 168 # Maximum time until files will be deleted in hours (24 hours)
+UPLOAD_LOG_FILE = "upload.log" # Log file for uploads
+ACCESS_LOG_FILE = "access.log" # Log file for access
 MAX_LOG_ENTRIES = 500 # Maximum number of log entries for each log file
+SMTP_SERVER = "smtp.example.com" # SMTP server url without the protocol and port
+SMTP_PORT = 587 # SMTP port
+SMTP_USERNAME = "email@example.com"  # Replace with email username
+SMTP_PASSWORD = "password"  # Replace with your email password
 
 # -------------------------------------------------------------------
 ```
@@ -86,6 +90,7 @@ You can use SWFT to perform the following actions:
 ### Share a File
 
 Use the provided shareable link to access the uploaded file. Customize links for easier sharing.
+User also has an option to send the files directly to your email by providing the email id. (Wait for some time and check spam / junk folder too)
 
 ### Delete Files
 
@@ -96,10 +101,11 @@ Uploaded files are automatically deleted after the specified time.
 SWFT supports sharing files using command-line tools like curl or wget. For example:
 
 ```bash
-curl -F "file=@/path/to/file" -F "link=my-secret-file" -F "time=1800" http://localhost:5000/
+curl -F "file=@/path/to/file" -F "link=my-secret-file" -F "time=1800" http://localhost:5000/ -F "email=email@example.com"
 ```
 
-This will give a sharable URL to the file like http://localhost:5000/my-secret-file that will get deleted after 1800 seconds.
+This will give a sharable URL to the file like http://localhost:5000/my-secret-file that will get deleted after the provided time.
+The Email and the Link are optional to use, Time should be provided in hours not exceeding 168 Hrs (1 Week)
 
 ## License
 

@@ -24,7 +24,7 @@ TEMP_FOLDER = os.path.join(os.getcwd(), os.getenv("TEMP_FOLDER")) # Folder name 
 MAX_TEMP_FOLDER_SIZE = float(os.getenv("MAX_TEMP_FOLDER_SIZE")) * 1024 * 1024 * 1024 # Maximum size of the temporary folder in GB
 DEFAULT_DEL_TIME = float(os.getenv("DEFAULT_DEL_TIME") * 60 * 60) # Time until files will be deleted in hours
 MAX_CONTENT_LENGTH = float(os.getenv("MAX_CONTENT_LENGTH")) * 1024 * 1024 # Maximum file size allowed in MB
-MAX_DEL_TIME = float(os.getenv("MAX_DEL_TIME")) * 60 * 60  # Maximum time until files will be deleted in hours
+MAX_DEL_TIME = float(os.getenv("MAX_DEL_TIME"))  # Maximum time until files will be deleted in hours
 UPLOAD_LOG_FILE = os.path.join(os.getcwd(), os.getenv("UPLOAD_LOG_FILE")) # Log file for uploads
 ACCESS_LOG_FILE = os.path.join(os.getcwd(), os.getenv("ACCESS_LOG_FILE")) # Log file for access
 MAX_LOG_ENTRIES = int(os.getenv("MAX_LOG_ENTRIES")) # Maximum number of log entries for each log file
@@ -75,17 +75,6 @@ def save_files_managed_to_file():
     with open("files_managed.json", "w") as json_file:
         json.dump(files_managed, json_file)
 
-# Split the string on the last dot to separate the extension
-def prevent_multiple_ext(s):
-    iter = s.count(".") - 1
-    if "." in s:
-        if iter > 0:
-            s.replace(".", "_")
-            iter -= 1       
-        return s
-    else:
-        return s
-
 def sanitize_string(input_string):
     # Replace any character that is not a letter, number, or space with an underscore
     sanitized = re.sub(r"[^a-zA-Z0-9 ]", "_", input_string)
@@ -101,7 +90,6 @@ def generate_unique_filename(filename):
     # Replace periods in the filename with underscores for security reasons CVE-2024–1086
     base, ext = os.path.splitext(filename)
     base = sanitize_string(base)
-    ext = prevent_multiple_ext(ext)
     counter = 1
     filename = f"{base}{ext}"
     while os.path.exists(os.path.join(TEMP_FOLDER, filename)):
@@ -234,6 +222,7 @@ def index():
 
 @app.route("/", methods=["POST"])
 def upload_file():
+    
     if "file" not in request.files:
         return "No file provided\n", 400
 
@@ -255,8 +244,10 @@ def upload_file():
     if (folder_size_bytes + file_size_bytes) >= MAX_TEMP_FOLDER_SIZE:
         return "Server Space Full :/\nTry again later\n", 400
 
-    del_time = float(request.form.get("time", DEFAULT_DEL_TIME)) * 60 * 60
+    del_time = float(request.form.get("time", DEFAULT_DEL_TIME))
     del_time = min(del_time, MAX_DEL_TIME) * 60 * 60
+    if del_time < 0 :
+        return "Invalid time\n", 400
 
     custom_link = request.form.get("link", filename)
 
@@ -272,7 +263,8 @@ def upload_file():
 
     try:
         uploaded_file.save(file_path)
-        send_email(email_address, file_path)
+        if email_address != "":
+            send_email(email_address, file_path)
         files_managed[custom_link] = (filename, del_time)
 
         remote_addr = request.headers.get("X-Forwarded-For", request.remote_addr)
