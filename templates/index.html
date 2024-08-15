@@ -11,11 +11,10 @@
       content="SWFT is a lightweight and user-friendly web-based file sharing service that allows you to quickly and securely share files with others"
     />
     <meta name="keywords" content="file sharing, temporary, share, upload" />
-    <meta name="author" content="Nnisarg Gada" />
+    <meta name="author" content="https://github.com/nnisarggada/swft/graphs/contributors" />
     <meta name="publisher" content="Nnisarg Gada" />
-    <meta name="author" content="https://share.nnisarg.in/" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://share.nnisarg.in/" />
+    <meta property="og:url" content="{{ full_url }}" />
     <meta property="og:title" content="SWFT | Simple Web-based File Transfer" />
     <meta
       property="og:description"
@@ -26,7 +25,7 @@
       content="SWFT | Simple Web-based File Transfer"
     />
     <meta property="og:locale" content="en_US" />
-    <link rel="canonical" href="https://share.nnisarg.in" />
+    <link rel="canonical" href="{{ full_url }}" />
     <!-- SEO -->
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -38,7 +37,8 @@
       function clearInputs() {
         document.getElementById("file").value = "";
         document.getElementById("link").value = "";
-        document.getElementById("time").value = "1800";
+        document.getElementById("email").value = "";
+        document.getElementById("time").value = "3";
       }
       function validateForm() {
         var fileInput = document.getElementById("file");
@@ -119,6 +119,18 @@
           </div>
         </div>
         <div class="flex flex-col gap-2">
+          <label for="link" class="font-bold"> Email Address (optional): </label>
+          <div class="flex items-center border border-white rounded-md p-2">
+            <input
+              type="email"
+              name="email"
+              id="email"
+              value=""
+              class="w-full bg-neutral-950 text-white focus:outline-none"
+            />
+          </div>
+        </div>
+        <div class="flex flex-col gap-2">
           <label for="time" class="font-bold"> Delete after: </label>
           <div>
             <select
@@ -126,15 +138,13 @@
               id="time"
               class="w-fit bg-neutral-500 font-bold appearance-none text-white rounded-md p-2 px-4"
             >
-              <option value="60">1 min</option>
-              <option value="300">5 mins</option>
-              <option value="600">10 mins</option>
-              <option value="900">15 mins</option>
-              <option value="1800" selected>30 mins</option>
-              <option value="3600">1 hr</option>
-              <option value="10800">3 hrs</option>
-              <option value="43200">12 hrs</option>
-              <option value="86400">1 day</option>
+              <option value="0.5">30 mins</option>
+              <option value="1">1 hr</option>
+              <option value="3" selected>3 hrs</option>
+              <option value="12">12 hrs</option>
+              <option value="24">1 day</option>
+              <option value="72">3 days</option>
+              <option value="168">7 days</option>
             </select>
           </div>
         </div>
