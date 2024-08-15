@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, render_template_string, send_from_directory
+from flask import Flask, request, render_template, send_from_directory
 import os
 import time
 import threading
@@ -19,19 +19,20 @@ load_dotenv()
 # The following variables are extracted from the .env file and should be set before starting the app
 # ---------------------------------------------------------------------------------------------------
 
-URL = os.getenv("URL") # Url of the hosted app
-TEMP_FOLDER = os.path.join(os.getcwd(), os.getenv("TEMP_FOLDER")) # Folder name where the files will stored temporarily
-MAX_TEMP_FOLDER_SIZE = float(os.getenv("MAX_TEMP_FOLDER_SIZE")) * 1024 * 1024 * 1024 # Maximum size of the temporary folder in GB
-DEFAULT_DEL_TIME = float(os.getenv("DEFAULT_DEL_TIME") * 60 * 60) # Time until files will be deleted in hours
-MAX_CONTENT_LENGTH = float(os.getenv("MAX_CONTENT_LENGTH")) * 1024 * 1024 # Maximum file size allowed in MB
-MAX_DEL_TIME = float(os.getenv("MAX_DEL_TIME"))  # Maximum time until files will be deleted in hours
-UPLOAD_LOG_FILE = os.path.join(os.getcwd(), os.getenv("UPLOAD_LOG_FILE")) # Log file for uploads
-ACCESS_LOG_FILE = os.path.join(os.getcwd(), os.getenv("ACCESS_LOG_FILE")) # Log file for access
-MAX_LOG_ENTRIES = int(os.getenv("MAX_LOG_ENTRIES")) # Maximum number of log entries for each log file
-SMTP_SERVER = os.getenv("SMTP_SERVER") # SMTP server for sending emails
-SMTP_PORT = os.getenv("SMTP_PORT") # SMTP port for sending emails
-SMTP_USERNAME = os.getenv("SMTP_USERNAME") # SMTP username for sending emails
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD") # SMTP password for sending emails
+URL = os.getenv("URL", "share.nnisarg.in") # Url of the hosted app
+TEMP_FOLDER = os.path.join(os.getcwd(), os.getenv("TEMP_FOLDER", "share_temp")) # Folder name where the files will stored temporarily
+MAX_TEMP_FOLDER_SIZE = float(os.getenv("MAX_TEMP_FOLDER_SIZE", 50)) * 1024 * 1024 * 1024 # Maximum size of the temporary folder in GB
+DEFAULT_DEL_TIME = float(os.getenv("DEFAULT_DEL_TIME", 3) * 60 * 60) # Time until files will be deleted in hours
+MAX_CONTENT_LENGTH = float(os.getenv("MAX_CONTENT_LENGTH", 100)) * 1024 * 1024 # Maximum file size allowed in MB
+MAX_DEL_TIME = float(os.getenv("MAX_DEL_TIME", 168))  # Maximum time until files will be deleted in hours
+UPLOAD_LOG_FILE = os.path.join(os.getcwd(), os.getenv("UPLOAD_LOG_FILE", "upload.log")) # Log file for uploads
+ACCESS_LOG_FILE = os.path.join(os.getcwd(), os.getenv("ACCESS_LOG_FILE", "access.log")) # Log file for access
+MAX_LOG_ENTRIES = int(os.getenv("MAX_LOG_ENTRIES", 500)) # Maximum number of log entries for each log file
+SMTP_SERVER = os.getenv("SMTP_SERVER", "smtp.gmail.com") # SMTP server for sending emails
+SMTP_PORT = os.getenv("SMTP_PORT", 587) # SMTP port for sending emails
+SMTP_USERNAME = os.getenv("SMTP_USERNAME", "swft@nnisarg.in") # SMTP username for sending emails
+SMTP_FROM = os.getenv("SMTP_FROM", "SWFT by Nnisarg Gada <swft@nnisarg.in>") # SMTP from address for sending emails
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "yourpassword") # SMTP password for sending emails
 
 # -------------------------------------------------------------------------------------
 # Image extensions that are supported by browsers to view directly without downloading
@@ -128,7 +129,7 @@ file_management_thread.start()
 # Returns the total size of a folder in bytes
 def get_folder_size(path):
     total_size = 0
-    for dirpath, dirnames, filenames in os.walk(path):
+    for dirpath, _, filenames in os.walk(path):
         for filename in filenames:
             file_path = os.path.join(dirpath, filename)
             total_size += os.path.getsize(file_path)
@@ -159,16 +160,16 @@ def send_email(email_address, file_path):
             print("Invalid email address\n")
         
         # Check for SMTP credentials
-        if not all([SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD]):
+        if not all([SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_FROM, SMTP_PASSWORD]):
             log_message(UPLOAD_LOG_FILE, "SMTP credentials not provided")
             print("SMTP credentials not provided\n")
             print("Invalid SMTP credentials\n")
 
         # Create the email message
         message = MIMEMultipart()
-        message["From"] = SMTP_USERNAME
+        message["From"] = SMTP_FROM
         message["To"] = email_address
-        message["Subject"] = f"File shared with you on {URL}"
+        message["Subject"] = f"File shared with you via {URL}"
 
         body = f"Hello {email_address}, thank you for using our service at {URL}. The file you provided has been attached to this email!"
         message.attach(MIMEText(body, "plain"))
@@ -189,13 +190,12 @@ def send_email(email_address, file_path):
 
         # Send the email
         try:
-            with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+            with smtplib.SMTP(SMTP_SERVER, int(SMTP_PORT)) as server:
                 server.starttls()  # Upgrade the connection to secure
                 server.login(SMTP_USERNAME, SMTP_PASSWORD)  # Log in to the server
-                server.sendmail(SMTP_USERNAME, email_address, message.as_string())
+                server.sendmail(SMTP_FROM, email_address, message.as_string())
             print("Email sent successfully!")
         except Exception as e:
-            log_message(UPLOAD_LOG_FILE, f"Error sending email: {e}")
             print(f"Error: {e}\n")
     
     # Send the email in a separate thread to avoid blocking the main thread

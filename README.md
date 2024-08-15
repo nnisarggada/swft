@@ -50,7 +50,7 @@ Edit the SWFT configuration in the `main.py` file to customize settings such as 
 # The following .env file needs to be changed before running the app using following variables: [SMTP_x are optional to use for sending emails]
 # -------------------------------------------------------------------
 
-URL = "share.example.com" # Url of the hosted app
+URL = "share.nnisarg.in" # URL of the hosted app
 TEMP_FOLDER = "share_temp" # Folder where the files will stored temporarily
 MAX_TEMP_FOLDER_SIZE = 50 # Maximum size of the temporary folder in GB (50GB)
 DEFAULT_DEL_TIME = 3 # Time until files will be deleted in hours (3 hours)
@@ -59,10 +59,11 @@ MAX_DEL_TIME = 168 # Maximum time until files will be deleted in hours (24 hours
 UPLOAD_LOG_FILE = "upload.log" # Log file for uploads
 ACCESS_LOG_FILE = "access.log" # Log file for access
 MAX_LOG_ENTRIES = 500 # Maximum number of log entries for each log file
-SMTP_SERVER = "smtp.example.com" # SMTP server url without the protocol and port
+SMTP_SERVER = "smtp.gmail.com" # SMTP server URL without the protocol and port
 SMTP_PORT = 587 # SMTP port
-SMTP_USERNAME = "email@example.com"  # Replace with email username
-SMTP_PASSWORD = "password"  # Replace with your email password
+SMTP_USERNAME = "swft@nnisarg.in"  # Replace with username
+SMTP_FROM = "SWFT by Nnisarg Gada <swft@nnisarg.in>" # Replace with your email
+SMTP_PASSWORD = "yourpassword"  # Replace with your email password
 
 # -------------------------------------------------------------------
 ```
@@ -101,10 +102,10 @@ Uploaded files are automatically deleted after the specified time.
 SWFT supports sharing files using command-line tools like curl or wget. For example:
 
 ```bash
-curl -F "file=@/path/to/file" -F "link=my-secret-file" -F "time=1800" http://localhost:5000/ -F "email=email@example.com"
+curl -F "file=@/path/to/file" -F "link=my-secret-file" -F "time=3" -F "email=email@example.com" http://localhost:5000/
 ```
 
-This will give a sharable URL to the file like http://localhost:5000/my-secret-file that will get deleted after the provided time.
+This will give a shareable URL to the file like http://localhost:5000/my-secret-file that will get deleted after the provided time.
 The Email and the Link are optional to use, Time should be provided in hours not exceeding 168 Hrs (1 Week)
 
 ## License
