@@ -209,7 +209,6 @@ def log_request():
     date = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
     method = request.method
     path = request.path
-    path = sanitize_string(path)
     scheme = request.scheme
 
     if method == "GET":
