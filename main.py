@@ -265,6 +265,7 @@ def upload_file():
         if email_address != "":
             send_email(email_address, file_path)
         files_managed[custom_link] = (filename, del_time)
+        save_files_managed_to_file()
 
         remote_addr = request.headers.get("X-Forwarded-For", request.remote_addr)
         user_agent = request.headers.get("User-Agent").replace("\n", " ").replace(" ", "-")
