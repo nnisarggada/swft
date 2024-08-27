@@ -247,7 +247,7 @@ def upload_file():
     folder_size_bytes = get_folder_size(folder_path)
     file_size_bytes = int(request.headers["Content-Length"])
 
-    email_address = request.form.get("email", "")
+    email_address = request.form.get("email")
 
     if (folder_size_bytes + file_size_bytes) >= MAX_TEMP_FOLDER_SIZE:
         return "Server Space Full :/\nTry again later\n", 400
@@ -258,7 +258,11 @@ def upload_file():
         return "Invalid time\n", 400
 
     custom_link = request.form.get("link", filename)
-    custom_link = sanitize_string(custom_link.lower())
+
+    if custom_link == "":
+        custom_link = filename
+    else:
+        custom_link = sanitize_string(custom_link.lower())
 
     invalid_links = ["about", "robots.txt", "sitemap.xml", "shared", "security.txt", "favicon.ico"]
 
