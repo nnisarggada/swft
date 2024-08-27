@@ -285,7 +285,7 @@ def upload_file():
         if "html" in request.headers.get("Accept"):
             return render_template("shared.html", link=custom_link, full_url=URL, umami_src=UMAMI_SRC, umami_id=UMAMI_ID)
         else:
-            return "https://" + URL + "/" + custom_link
+            return URL + "/" + custom_link
 
     except Exception as e:
         log_message(UPLOAD_LOG_FILE, f"Error: {e}")
