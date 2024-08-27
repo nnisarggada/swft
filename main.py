@@ -116,15 +116,15 @@ def delete_old_files():
                 if current_time - file_creation_time >= del_time:
                     to_delete.append(link)
 
+        # Remove expired files from json
+        for link in remove_from_json:
+            files_managed.pop(link)
+
         # Actual deletion of files
         for link in to_delete:
             filename, _ = files_managed.pop(link)
             file_path = os.path.join(TEMP_FOLDER, filename)
             os.remove(file_path)
-
-        # Remove expired files from json
-        for link in remove_from_json:
-            files_managed.pop(link)
 
         # Save the updated files_managed dictionary to a file
         save_files_managed_to_file()
