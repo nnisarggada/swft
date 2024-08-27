@@ -22,7 +22,7 @@ load_dotenv()
 URL = os.getenv("URL", "https://share.nnisarg.in") # Url of the hosted app
 TEMP_FOLDER = os.path.join(os.getcwd(), os.getenv("TEMP_FOLDER", "share_temp")) # Folder name where the files will stored temporarily
 MAX_TEMP_FOLDER_SIZE = float(os.getenv("MAX_TEMP_FOLDER_SIZE", 50)) * 1024 * 1024 * 1024 # Maximum size of the temporary folder in GB
-DEFAULT_DEL_TIME = float(os.getenv("DEFAULT_DEL_TIME", 3) * 60 * 60) # Time until files will be deleted in hours
+DEFAULT_DEL_TIME = float(os.getenv("DEFAULT_DEL_TIME", 3)) # Time until files will be deleted in hours
 MAX_CONTENT_LENGTH = float(os.getenv("MAX_CONTENT_LENGTH", 100)) * 1024 * 1024 # Maximum file size allowed in MB
 MAX_DEL_TIME = float(os.getenv("MAX_DEL_TIME", 168))  # Maximum time until files will be deleted in hours
 UPLOAD_LOG_FILE = os.path.join(os.getcwd(), os.getenv("UPLOAD_LOG_FILE", "upload.log")) # Log file for uploads
