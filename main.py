@@ -109,7 +109,7 @@ def delete_old_files():
         # Identify files that need to be deleted
         for link, (filename, del_time) in files_managed.items():
             if not os.path.exists(os.path.join(TEMP_FOLDER, filename)):
-                to_delete.append(link)
+                files_managed.pop(link)
             else:
                 file_creation_time = os.path.getctime(os.path.join(TEMP_FOLDER, filename))
                 if current_time - file_creation_time >= del_time:
