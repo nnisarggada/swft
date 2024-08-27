@@ -11,7 +11,10 @@
       content="SWFT is a lightweight and user-friendly web-based file sharing service that allows you to quickly and securely share files with others"
     />
     <meta name="keywords" content="file sharing, temporary, share, upload" />
-    <meta name="author" content="https://github.com/nnisarggada/swft/graphs/contributors" />
+    <meta
+      name="author"
+      content="https://github.com/nnisarggada/swft/graphs/contributors"
+    />
     <meta name="publisher" content="Nnisarg Gada" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="{{ full_url }}" />
@@ -28,6 +31,11 @@
     <link rel="canonical" href="{{ full_url }}" />
     <!-- SEO -->
 
+    <script
+      defer
+      src="{{ umami_src }}"
+      data-website-id="{{ umami_id }}"
+    ></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script
       src="https://kit.fontawesome.com/0b92670209.js"
@@ -108,7 +116,10 @@
         <div class="flex flex-col gap-2">
           <label for="link" class="font-bold"> Custom link (optional): </label>
           <div class="flex items-center border border-white rounded-md p-2">
-            <span>{{ full_url }}/</span>
+            <span
+              >{{ full_url.replace("https://", "").replace("http://", "")
+              }}/</span
+            >
             <input
               type="text"
               name="link"
@@ -119,7 +130,9 @@
           </div>
         </div>
         <div class="flex flex-col gap-2">
-          <label for="link" class="font-bold"> Email Address (optional): </label>
+          <label for="link" class="font-bold">
+            Email Address (optional):
+          </label>
           <div class="flex items-center border border-white rounded-md p-2">
             <input
               type="email"

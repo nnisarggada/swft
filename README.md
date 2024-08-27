@@ -64,7 +64,8 @@ SMTP_PORT = 587 # SMTP port
 SMTP_USERNAME = "swft@nnisarg.in"  # Replace with username
 SMTP_FROM = "SWFT by Nnisarg Gada <swft@nnisarg.in>" # Replace with your email
 SMTP_PASSWORD = "yourpassword"  # Replace with your email password
-
+UMAMI_SRC = "https://umami.ls/script.js" # Replace with your Umami script src
+UMAMI_ID = "your_website_id" # Replace with your Umami website id
 # -------------------------------------------------------------------
 ```
 

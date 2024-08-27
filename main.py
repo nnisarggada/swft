@@ -19,7 +19,7 @@ load_dotenv()
 # The following variables are extracted from the .env file and should be set before starting the app
 # ---------------------------------------------------------------------------------------------------
 
-URL = os.getenv("URL", "share.nnisarg.in") # Url of the hosted app
+URL = os.getenv("URL", "https://share.nnisarg.in") # Url of the hosted app
 TEMP_FOLDER = os.path.join(os.getcwd(), os.getenv("TEMP_FOLDER", "share_temp")) # Folder name where the files will stored temporarily
 MAX_TEMP_FOLDER_SIZE = float(os.getenv("MAX_TEMP_FOLDER_SIZE", 50)) * 1024 * 1024 * 1024 # Maximum size of the temporary folder in GB
 DEFAULT_DEL_TIME = float(os.getenv("DEFAULT_DEL_TIME", 3) * 60 * 60) # Time until files will be deleted in hours
@@ -33,6 +33,8 @@ SMTP_PORT = os.getenv("SMTP_PORT", 587) # SMTP port for sending emails
 SMTP_USERNAME = os.getenv("SMTP_USERNAME", "swft@nnisarg.in") # SMTP username for sending emails
 SMTP_FROM = os.getenv("SMTP_FROM", "SWFT by Nnisarg Gada <swft@nnisarg.in>") # SMTP from address for sending emails
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "yourpassword") # SMTP password for sending emails
+UMAMI_SRC = os.getenv("UMAMI_SRC", "https://umami.ls/script.js") # Umami script source
+UMAMI_ID = os.getenv("UMAMI_ID", "your_website_id") # Umami website id
 
 # -------------------------------------------------------------------------------------
 # Image extensions that are supported by browsers to view directly without downloading
@@ -217,7 +219,7 @@ def log_request():
 
 @app.route("/", methods=["GET"])
 def index():
-    return render_template("index.html", full_url=URL)
+    return render_template("index.html", full_url=URL, umami_src=UMAMI_SRC, umami_id=UMAMI_ID)
 
 @app.route("/", methods=["POST"])
 def upload_file():
@@ -273,7 +275,7 @@ def upload_file():
         log_content = f"{remote_addr} {user_agent} {date} {filename} {custom_link} {del_time}\n"
         log_message(UPLOAD_LOG_FILE, log_content)
         if "html" in request.headers.get("Accept"):
-            return render_template("shared.html", url=URL, link=custom_link)
+            return render_template("shared.html", link=custom_link, full_url=URL, umami_src=UMAMI_SRC, umami_id=UMAMI_ID)
         else:
             return "https://" + URL + "/" + custom_link
 
@@ -283,7 +285,7 @@ def upload_file():
 
 @app.route("/about", methods=["GET"])
 def about():
-    return render_template("about.html", full_url=URL)
+    return render_template("about.html", full_url=URL, umami_src=UMAMI_SRC, umami_id=UMAMI_ID)
 
 @app.route("/<link>", methods=["GET"])
 def share_file(link):
