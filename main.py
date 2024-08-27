@@ -272,7 +272,7 @@ def upload_file():
 
     try:
         uploaded_file.save(file_path)
-        if email_address != "":
+        if email_address is not None and email_address != "":
             send_email(email_address, file_path)
         files_managed[custom_link] = (filename, del_time)
         save_files_managed_to_file()
