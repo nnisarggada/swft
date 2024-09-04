@@ -46,8 +46,6 @@ To set up a development environment for SWFT, follow these steps:
 
 ### Prerequisites
 
-Ensure you have the following prerequisites installed:
-
 - Python 3.x
 - Flask (Python web framework)
 - pip (Python package manager)
@@ -59,12 +57,6 @@ Clone the SWFT repository to your server:
 ```bash
 git clone https://github.com/nnisarggada/swft
 cd swft
-```
-
-Make a directory for temporary storage:
-
-```bash
-mkdir share_temp
 ```
 
 Create a Python virtual environment and activate it:
@@ -82,23 +74,38 @@ pip install -r requirements.txt
 
 ### Configuration
 
-Edit the SWFT configuration in the `main.py` file to customize settings such as the port, URL, folder for storing files, and the time until files are deleted. Modify the following variables as needed:
+Edit the SWFT configuration in the `.env` or `main.py` file to customize settings such as the port, URL, folder for storing files, and the time until files are deleted. Modify the following variables as needed:
 
 ```python
-URL = "localhost"  # Url of the hosted app
-TEMP_FOLDER = "/home/nnisarggada/GitRepos/swft/share_temp"  # Folder where the files will be stored temporarily
-MAX_TEMP_FOLDER_SIZE = 50 * 1024 * 1024  # Maximum size of the temporary folder in bytes (50MB)
-DEFAULT_DEL_TIME = 1800  # Time until files will be deleted in seconds (30 minutes)
-MAX_CONTENT_LENGTH = 64 * 1024 * 1024  # Maximum file size allowed in bytes (64MB)
-MAX_DEL_TIME = 24 * 60 * 60  # Maximum time until files will be deleted in seconds (24 hours)
+# -------------------------------------------------------------------
+# The following .env file needs to be changed before running the app using following variables: [SMTP_x and UMAMI_x are optional to use for sending emails]
+# -------------------------------------------------------------------
+
+URL = "share.nnisarg.in" # URL of the hosted app
+TEMP_FOLDER = "share_temp" # Folder where the files will stored temporarily
+MAX_TEMP_FOLDER_SIZE = 50 # Maximum size of the temporary folder in GB (50GB)
+DEFAULT_DEL_TIME = 3 # Time until files will be deleted in hours (3 hours)
+MAX_CONTENT_LENGTH = 100 # Maximum file size allowed in MB (100MB)
+MAX_DEL_TIME = 168 # Maximum time until files will be deleted in hours (24 hours)
+UPLOAD_LOG_FILE = "upload.log" # Log file for uploads
+ACCESS_LOG_FILE = "access.log" # Log file for access
+MAX_LOG_ENTRIES = 500 # Maximum number of log entries for each log file
+SMTP_SERVER = "smtp.gmail.com" # SMTP server URL without the protocol and port
+SMTP_PORT = 587 # SMTP port
+SMTP_USERNAME = "swft@nnisarg.in"  # Replace with username
+SMTP_FROM = "SWFT by Nnisarg Gada <swft@nnisarg.in>" # Replace with your email
+SMTP_PASSWORD = "yourpassword"  # Replace with your email password
+UMAMI_SRC = "https://umami.ls/script.js" # Replace with your Umami script src
+UMAMI_ID = "your_website_id" # Replace with your Umami website id
+# -------------------------------------------------------------------
 ```
 
 ### Running the App
 
-Run the SWFT app with sudo (to give permissions):
+Run the SWFT app by specifying the port number:
 
 ```bash
-sudo gunicorn -b 0.0.0.0:80 main:app
+gunicorn -b 0.0.0.0:5000 main:app
 ```
 
-Here, `80` is the port on which the app will run. You can access the SWFT web interface in your web browser at http://localhost:80.
+Here, `5000` is the port on which the app will run. You can access the SWFT web interface in your web browser at http://localhost:5000.
