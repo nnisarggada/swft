@@ -2,6 +2,25 @@
 
 SWFT is a lightweight and user-friendly web-based file sharing service that allows you to quickly and securely share files with others. With SWFT, you can easily upload files, get shareable links, and even customize links for easy sharing.
 
+# Table of Contents
+
+- [SWFT - Simple Web-based File Transfer](#swft---simple-web-based-file-transfer)
+  - [Features](#features)
+  - [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+    - [Configuration](#configuration)
+    - [Running the App](#running-the-app)
+  - [Usage](#usage)
+    - [Upload a File](#upload-a-file)
+    - [Share a File](#share-a-file)
+    - [Delete Files](#delete-files)
+    - [Command-Line Usage (curl/wget)](#command-line-usage-curlwget)
+  - [TODO](#todo)
+  - [License](#license)
+  - [Contributing](#contributing)
+  - [Code of Conduct](#code-of-conduct)
+
 ## Features
 
 - Upload files and get shareable links.
@@ -43,11 +62,11 @@ pip install -r requirements.txt
 
 ### Configuration
 
-Edit the SWFT configuration in the `main.py` file to customize settings such as the port, URL, folder for storing files, and the time until files are deleted. Modify the following variables as needed:
+Edit the SWFT configuration in the `.env` or `main.py` file to customize settings such as the port, URL, folder for storing files, and the time until files are deleted. Modify the following variables as needed:
 
 ```python
 # -------------------------------------------------------------------
-# The following .env file needs to be changed before running the app using following variables: [SMTP_x are optional to use for sending emails]
+# The following .env file needs to be changed before running the app using following variables: [SMTP_x and UMAMI_x are optional to use for sending emails]
 # -------------------------------------------------------------------
 
 URL = "share.nnisarg.in" # URL of the hosted app
@@ -91,8 +110,8 @@ You can use SWFT to perform the following actions:
 
 ### Share a File
 
-Use the provided shareable link to access the uploaded file. Customize links for easier sharing.
-User also has an option to send the files directly to your email by providing the email id. (Wait for some time and check spam / junk folder too)
+Use the provided shareable link to access the uploaded file. Customize links for easier sharing.  
+The user also has an option to send the files directly to your email by providing the email id. (Wait for some time and check spam/junk folder too)
 
 ### Delete Files
 
@@ -106,8 +125,15 @@ SWFT supports sharing files using command-line tools like curl or wget. For exam
 curl -F "file=@/path/to/file" -F "link=my-secret-file" -F "time=3" -F "email=email@example.com" http://localhost:5000/
 ```
 
-This will give a shareable URL to the file like http://localhost:5000/my-secret-file that will get deleted after the provided time.
-The Email and the Link are optional to use, Time should be provided in hours not exceeding 168 Hrs (1 Week)
+This will give a shareable URL to the file like http://localhost:5000/my-secret-file that will get deleted after the provided time.  
+The Email and the Link are optional to use. Time should be provided in hours not exceeding 168 Hrs (1 Week).
+
+## TODO
+
+- [x] ~~Add support for sending files via email.~~
+- [ ] Implement rate limiting to prevent abuse.
+- [ ] Add logging for email-related actions.
+- [ ] Develop an admin dashboard for managing uploads and monitoring usage.
 
 ## License
 
