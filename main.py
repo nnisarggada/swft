@@ -129,7 +129,7 @@ def delete_old_files():
         # Save the updated files_managed dictionary to a file
         save_files_managed_to_file()
 
-        time.sleep(0.25*60*60) # Checks every 15 minutes
+        time.sleep(60) # Checks every 1 minute
 
 # Keep the file management thread running in the background
 file_management_thread = threading.Thread(target=delete_old_files)
