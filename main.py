@@ -215,7 +215,7 @@ def send_email(email_address, file_path):
 @app.before_request
 def log_request():
     remote_addr = request.headers.get("X-Forwarded-For", request.remote_addr)
-    user_agent = request.headers.get("User-Agent").replace("\n", " ").replace(" ", "-")
+    user_agent = request.headers.get("User-Agent", "Unknown").replace("\n", " ").replace(" ", "-")
     date = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
     method = request.method
     path = request.path
@@ -277,7 +277,7 @@ def upload_file():
         save_files_managed_to_file()
 
         remote_addr = request.headers.get("X-Forwarded-For", request.remote_addr)
-        user_agent = request.headers.get("User-Agent").replace("\n", " ").replace(" ", "-")
+        user_agent = request.headers.get("User-Agent", "Unknown").replace("\n", " ").replace(" ", "-")
         date = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
         log_content = f"{remote_addr} {user_agent} {date} {filename} {custom_link} {del_time}\n"
         log_message(UPLOAD_LOG_FILE, log_content)
