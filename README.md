@@ -4,22 +4,21 @@ SWFT is a lightweight and user-friendly web-based file sharing service that allo
 
 # Table of Contents
 
-- [SWFT - Simple Web-based File Transfer](#swft---simple-web-based-file-transfer)
-  - [Features](#features)
-  - [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
-    - [Configuration](#configuration)
-    - [Running the App](#running-the-app)
-  - [Usage](#usage)
-    - [Upload a File](#upload-a-file)
-    - [Share a File](#share-a-file)
-    - [Delete Files](#delete-files)
-    - [Command-Line Usage (curl/wget)](#command-line-usage-curlwget)
-  - [TODO](#todo)
-  - [License](#license)
-  - [Contributing](#contributing)
-  - [Code of Conduct](#code-of-conduct)
+- [Features](#features)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Configuration](#configuration)
+  - [Running the App](#running-the-app)
+- [Usage](#usage)
+  - [Upload a File](#upload-a-file)
+  - [Share a File](#share-a-file)
+  - [Delete Files](#delete-files)
+  - [Command-Line Usage (curl/wget)](#command-line-usage-curlwget)
+- [TODO](#todo)
+- [License](#license)
+- [Contributing](#contributing)
+- [Code of Conduct](#code-of-conduct)
 
 ## Features
 
