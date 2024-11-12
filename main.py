@@ -11,7 +11,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
 from dotenv import load_dotenv
-
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 load_dotenv()
 
@@ -35,6 +36,7 @@ SMTP_FROM = os.getenv("SMTP_FROM", "SWFT by Nnisarg Gada <swft@nnisarg.in>") # S
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "yourpassword") # SMTP password for sending emails
 UMAMI_SRC = os.getenv("UMAMI_SRC", "https://umami.ls/script.js") # Umami script source
 UMAMI_ID = os.getenv("UMAMI_ID", "your_website_id") # Umami website id
+RATE_LIMIT = os.getenv("RATE_LIMIT", "5 per hour")
 
 # -------------------------------------------------------------------------------------
 # Image extensions that are supported by browsers to view directly without downloading
@@ -44,6 +46,12 @@ IMG_EXTENSIONS = [".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".bmp", ".ic
 
 
 app = Flask(__name__)
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["5 per hour"],
+    storage_uri="memory://",
+)
 
 # Routing for static files
 @app.route("/security.txt")
@@ -230,6 +238,7 @@ def index():
     return render_template("index.html", full_url=URL, umami_src=UMAMI_SRC, umami_id=UMAMI_ID)
 
 @app.route("/", methods=["POST"])
+@limiter.limit(RATE_LIMIT)
 def upload_file():
     
     if "file" not in request.files:
