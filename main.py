@@ -164,7 +164,7 @@ def log_message(logfile, content):
     io_thread.start()
 
 # Send email to the user
-def send_email(email_address, file_path):
+def send_email(email_address, file_path, file_url, expiry):
     def email_task():
         if not is_valid_email(email_address):
             print("Invalid email address\n")
@@ -181,7 +181,7 @@ def send_email(email_address, file_path):
         message["To"] = email_address
         message["Subject"] = f"File shared with you via {URL}"
 
-        body = f"Hello {email_address}, thank you for using our service at {URL}. The file you provided has been attached to this email!"
+        body = f"Hello {email_address} the file you provided has been attached to this email and the url where it was shared is: {file_url} and expires in {expiry}!"
         message.attach(MIMEText(body, "plain"))
 
         # Check if the file exists and attach it
@@ -272,7 +272,7 @@ def upload_file():
     try:
         uploaded_file.save(file_path)
         if email_address is not None and email_address != "":
-            send_email(email_address, file_path)
+            send_email(email_address, file_path, URL+"/"+custom_link, del_time/3600)
         files_managed[custom_link] = (filename, del_time)
         save_files_managed_to_file()
 
