@@ -36,7 +36,8 @@ SMTP_FROM = os.getenv("SMTP_FROM", "SWFT by Nnisarg Gada <swft@nnisarg.in>") # S
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "yourpassword") # SMTP password for sending emails
 UMAMI_SRC = os.getenv("UMAMI_SRC", "https://umami.ls/script.js") # Umami script source
 UMAMI_ID = os.getenv("UMAMI_ID", "your_website_id") # Umami website id
-RATE_LIMIT = os.getenv("RATE_LIMIT", "5 per hour")
+UPLOAD_RATE_LIMIT = os.getenv("UPLOAD_RATE_LIMIT", "5 per hour")
+DOWNLOAD_RATE_LIMIT = os.getenv("DOWNLOAD_RATE_LIMIT", "10 per hour")
 
 # -------------------------------------------------------------------------------------
 # Image extensions that are supported by browsers to view directly without downloading
@@ -239,7 +240,7 @@ def index():
     return render_template("index.html", full_url=URL, umami_src=UMAMI_SRC, umami_id=UMAMI_ID)
 
 @app.route("/", methods=["POST"])
-@limiter.limit(RATE_LIMIT)
+@limiter.limit(UPLOAD_RATE_LIMIT)
 def upload_file():
     URL=request.base_url[:-1]
     
@@ -307,6 +308,7 @@ def about():
     return render_template("about.html", full_url=URL, umami_src=UMAMI_SRC, umami_id=UMAMI_ID)
 
 @app.route("/<link>", methods=["GET"])
+@limiter.limit(DOWNLOAD_RATE_LIMIT)
 def share_file(link):
 
     link = link.lower()
