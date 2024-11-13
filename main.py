@@ -236,14 +236,11 @@ def log_request():
 
 @app.route("/", methods=["GET"])
 def index():
-    URL=request.base_url[:-1]
     return render_template("index.html", full_url=URL, umami_src=UMAMI_SRC, umami_id=UMAMI_ID)
 
 @app.route("/", methods=["POST"])
 @limiter.limit(UPLOAD_RATE_LIMIT)
-def upload_file():
-    URL=request.base_url[:-1]
-    
+def upload_file():    
     if "file" not in request.files:
         return "No file provided\n", 400
 
@@ -304,7 +301,6 @@ def upload_file():
 
 @app.route("/about", methods=["GET"])
 def about():
-    URL=request.base_url[:-1]
     return render_template("about.html", full_url=URL, umami_src=UMAMI_SRC, umami_id=UMAMI_ID)
 
 @app.route("/<link>", methods=["GET"])
