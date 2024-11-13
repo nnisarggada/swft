@@ -36,8 +36,8 @@ SMTP_FROM = os.getenv("SMTP_FROM", "SWFT by Nnisarg Gada <swft@nnisarg.in>") # S
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "yourpassword") # SMTP password for sending emails
 UMAMI_SRC = os.getenv("UMAMI_SRC", "https://umami.ls/script.js") # Umami script source
 UMAMI_ID = os.getenv("UMAMI_ID", "your_website_id") # Umami website id
-UPLOAD_RATE_LIMIT = os.getenv("UPLOAD_RATE_LIMIT", "5 per hour")
-DOWNLOAD_RATE_LIMIT = os.getenv("DOWNLOAD_RATE_LIMIT", "10 per hour")
+UPLOAD_RATE_LIMIT = os.getenv("UPLOAD_RATE_LIMIT", "5 per minute")
+DOWNLOAD_RATE_LIMIT = os.getenv("DOWNLOAD_RATE_LIMIT", "10 per minute")
 
 # -------------------------------------------------------------------------------------
 # Image extensions that are supported by browsers to view directly without downloading
