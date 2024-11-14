@@ -36,8 +36,9 @@ SMTP_FROM = os.getenv("SMTP_FROM", "SWFT by Nnisarg Gada <swft@nnisarg.in>") # S
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "yourpassword") # SMTP password for sending emails
 UMAMI_SRC = os.getenv("UMAMI_SRC", "https://umami.ls/script.js") # Umami script source
 UMAMI_ID = os.getenv("UMAMI_ID", "your_website_id") # Umami website id
-UPLOAD_RATE_LIMIT = os.getenv("UPLOAD_RATE_LIMIT", "5 per minute")
-DOWNLOAD_RATE_LIMIT = os.getenv("DOWNLOAD_RATE_LIMIT", "10 per minute")
+UPLOAD_RATE_LIMIT = os.getenv("UPLOAD_RATE_LIMIT", "5 per minute") # Number of uploads
+DOWNLOAD_RATE_LIMIT = os.getenv("DOWNLOAD_RATE_LIMIT", "10 per minute") # Number of downbloads
+STORAGE_URI = os.getenv("STORAGE_URI", "memory://") # Storage URI for Flask Limiter
 
 # -------------------------------------------------------------------------------------
 # Image extensions that are supported by browsers to view directly without downloading
@@ -50,7 +51,7 @@ app = Flask(__name__)
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["5 per hour"],
+    default_limits=["1 per second"],
     storage_uri="memory://",
 )
 
