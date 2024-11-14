@@ -130,7 +130,7 @@ The Email and the Link are optional to use. Time should be provided in hours not
 ## TODO
 
 - [x] ~~Add support for sending files via email.~~
-- [ ] Implement rate limiting to prevent abuse.
+- [x] ~~Implement rate limiting to prevent abuse.~~
 - [ ] Add logging for email-related actions.
 - [ ] Develop an admin dashboard for managing uploads and monitoring usage.
 

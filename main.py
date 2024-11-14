@@ -11,7 +11,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
 from dotenv import load_dotenv
-
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 load_dotenv()
 
@@ -35,6 +36,9 @@ SMTP_FROM = os.getenv("SMTP_FROM", "SWFT by Nnisarg Gada <swft@nnisarg.in>") # S
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "yourpassword") # SMTP password for sending emails
 UMAMI_SRC = os.getenv("UMAMI_SRC", "https://umami.ls/script.js") # Umami script source
 UMAMI_ID = os.getenv("UMAMI_ID", "your_website_id") # Umami website id
+UPLOAD_RATE_LIMIT = os.getenv("UPLOAD_RATE_LIMIT", "5 per minute") # Number of uploads
+DOWNLOAD_RATE_LIMIT = os.getenv("DOWNLOAD_RATE_LIMIT", "10 per minute") # Number of downbloads
+STORAGE_URI = os.getenv("STORAGE_URI", "memory://") # Storage URI for Flask Limiter
 
 # -------------------------------------------------------------------------------------
 # Image extensions that are supported by browsers to view directly without downloading
@@ -44,6 +48,12 @@ IMG_EXTENSIONS = [".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".bmp", ".ic
 
 
 app = Flask(__name__)
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["1 per second"],
+    storage_uri="memory://",
+)
 
 # Routing for static files
 @app.route("/security.txt")
@@ -164,7 +174,7 @@ def log_message(logfile, content):
     io_thread.start()
 
 # Send email to the user
-def send_email(email_address, file_path):
+def send_email(email_address, file_path, file_url, expiry):
     def email_task():
         if not is_valid_email(email_address):
             print("Invalid email address\n")
@@ -181,7 +191,7 @@ def send_email(email_address, file_path):
         message["To"] = email_address
         message["Subject"] = f"File shared with you via {URL}"
 
-        body = f"Hello {email_address}, thank you for using our service at {URL}. The file you provided has been attached to this email!"
+        body = f"Hello {email_address} the file you provided has been attached to this email and the url where it was shared is: {file_url} and expires in {expiry} hours!"
         message.attach(MIMEText(body, "plain"))
 
         # Check if the file exists and attach it
@@ -230,8 +240,8 @@ def index():
     return render_template("index.html", full_url=URL, umami_src=UMAMI_SRC, umami_id=UMAMI_ID)
 
 @app.route("/", methods=["POST"])
-def upload_file():
-    
+@limiter.limit(UPLOAD_RATE_LIMIT)
+def upload_file():    
     if "file" not in request.files:
         return "No file provided\n", 400
 
@@ -272,7 +282,7 @@ def upload_file():
     try:
         uploaded_file.save(file_path)
         if email_address is not None and email_address != "":
-            send_email(email_address, file_path)
+            send_email(email_address, file_path, URL+"/"+custom_link, del_time/3600)
         files_managed[custom_link] = (filename, del_time)
         save_files_managed_to_file()
 
@@ -295,6 +305,7 @@ def about():
     return render_template("about.html", full_url=URL, umami_src=UMAMI_SRC, umami_id=UMAMI_ID)
 
 @app.route("/<link>", methods=["GET"])
+@limiter.limit(DOWNLOAD_RATE_LIMIT)
 def share_file(link):
 
     link = link.lower()
