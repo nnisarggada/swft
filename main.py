@@ -190,7 +190,7 @@ def send_email(email_address, file_path, file_url, expiry):
         message["To"] = email_address
         message["Subject"] = f"File shared with you via {URL}"
 
-        body = f"Hello {email_address} the file you provided has been attached to this email and the url where it was shared is: {file_url} and expires in {expiry}!"
+        body = f"Hello {email_address} the file you provided has been attached to this email and the url where it was shared is: {file_url} and expires in {expiry} hours!"
         message.attach(MIMEText(body, "plain"))
 
         # Check if the file exists and attach it
