@@ -20,34 +20,76 @@ load_dotenv()
 # The following variables are extracted from the .env file and should be set before starting the app
 # ---------------------------------------------------------------------------------------------------
 
-URL = os.getenv("URL", "https://share.nnisarg.in") # Url of the hosted app
-TEMP_FOLDER = os.path.join(os.getcwd(), os.getenv("TEMP_FOLDER", "share_temp")) # Folder name where the files will stored temporarily
-MAX_TEMP_FOLDER_SIZE = float(os.getenv("MAX_TEMP_FOLDER_SIZE", 50)) * 1024 * 1024 * 1024 # Maximum size of the temporary folder in GB
-DEFAULT_DEL_TIME = float(os.getenv("DEFAULT_DEL_TIME", 3)) # Time until files will be deleted in hours
-MAX_CONTENT_LENGTH = float(os.getenv("MAX_CONTENT_LENGTH", 100)) * 1024 * 1024 # Maximum file size allowed in MB
-MAX_DEL_TIME = float(os.getenv("MAX_DEL_TIME", 168))  # Maximum time until files will be deleted in hours
-UPLOAD_LOG_FILE = os.path.join(os.getcwd(), os.getenv("UPLOAD_LOG_FILE", "upload.log")) # Log file for uploads
-ACCESS_LOG_FILE = os.path.join(os.getcwd(), os.getenv("ACCESS_LOG_FILE", "access.log")) # Log file for access
-MAX_LOG_ENTRIES = int(os.getenv("MAX_LOG_ENTRIES", 500)) # Maximum number of log entries for each log file
-SMTP_SERVER = os.getenv("SMTP_SERVER", "smtp.gmail.com") # SMTP server for sending emails
-SMTP_PORT = os.getenv("SMTP_PORT", 587) # SMTP port for sending emails
-SMTP_USERNAME = os.getenv("SMTP_USERNAME", "swft@nnisarg.in") # SMTP username for sending emails
-SMTP_FROM = os.getenv("SMTP_FROM", "SWFT by Nnisarg Gada <swft@nnisarg.in>") # SMTP from address for sending emails
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "yourpassword") # SMTP password for sending emails
-UMAMI_SRC = os.getenv("UMAMI_SRC", "https://umami.ls/script.js") # Umami script source
-UMAMI_ID = os.getenv("UMAMI_ID", "your_website_id") # Umami website id
-UPLOAD_RATE_LIMIT = os.getenv("UPLOAD_RATE_LIMIT", "5 per minute") # Number of uploads
-DOWNLOAD_RATE_LIMIT = os.getenv("DOWNLOAD_RATE_LIMIT", "10 per minute") # Number of downbloads
-STORAGE_URI = os.getenv("STORAGE_URI", "memory://") # Storage URI for Flask Limiter
+URL = os.getenv("URL", "https://share.nnisarg.in")  # Url of the hosted app
+TEMP_FOLDER = os.path.join(
+    os.getcwd(), os.getenv("TEMP_FOLDER", "share_temp")
+)  # Folder name where the files will stored temporarily
+MAX_TEMP_FOLDER_SIZE = (
+    float(os.getenv("MAX_TEMP_FOLDER_SIZE", 50)) * 1024 * 1024 * 1024
+)  # Maximum size of the temporary folder in GB
+DEFAULT_DEL_TIME = float(
+    os.getenv("DEFAULT_DEL_TIME", 3)
+)  # Time until files will be deleted in hours
+MAX_CONTENT_LENGTH = (
+    float(os.getenv("MAX_CONTENT_LENGTH", 100)) * 1024 * 1024
+)  # Maximum file size allowed in MB
+MAX_DEL_TIME = float(
+    os.getenv("MAX_DEL_TIME", 168)
+)  # Maximum time until files will be deleted in hours
+UPLOAD_LOG_FILE = os.path.join(
+    os.getcwd(), os.getenv("UPLOAD_LOG_FILE", "upload.log")
+)  # Log file for uploads
+ACCESS_LOG_FILE = os.path.join(
+    os.getcwd(), os.getenv("ACCESS_LOG_FILE", "access.log")
+)  # Log file for access
+MAX_LOG_ENTRIES = int(
+    os.getenv("MAX_LOG_ENTRIES", 500)
+)  # Maximum number of log entries for each log file
+SMTP_SERVER = os.getenv(
+    "SMTP_SERVER", "smtp.gmail.com"
+)  # SMTP server for sending emails
+SMTP_PORT = os.getenv("SMTP_PORT", 587)  # SMTP port for sending emails
+SMTP_USERNAME = os.getenv(
+    "SMTP_USERNAME", "swft@nnisarg.in"
+)  # SMTP username for sending emails
+SMTP_FROM = os.getenv(
+    "SMTP_FROM", "SWFT by Nnisarg Gada <swft@nnisarg.in>"
+)  # SMTP from address for sending emails
+SMTP_PASSWORD = os.getenv(
+    "SMTP_PASSWORD", "yourpassword"
+)  # SMTP password for sending emails
+UMAMI_SRC = os.getenv("UMAMI_SRC", "https://umami.ls/script.js")  # Umami script source
+UMAMI_ID = os.getenv("UMAMI_ID", "your_website_id")  # Umami website id
+UPLOAD_RATE_LIMIT = os.getenv("UPLOAD_RATE_LIMIT", "5 per minute")  # Number of uploads
+DOWNLOAD_RATE_LIMIT = os.getenv(
+    "DOWNLOAD_RATE_LIMIT", "10 per minute"
+)  # Number of downbloads
+STORAGE_URI = os.getenv("STORAGE_URI", "memory://")  # Storage URI for Flask Limiter
 
 # -------------------------------------------------------------------------------------
 # Image extensions that are supported by browsers to view directly without downloading
 # -------------------------------------------------------------------------------------
 
-IMG_EXTENSIONS = [".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".bmp", ".ico", ".apng", ".avif", ".jpe", ".jfif", ".jif"]
+IMG_EXTENSIONS = [
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".webp",
+    ".svg",
+    ".bmp",
+    ".ico",
+    ".apng",
+    ".avif",
+    ".jpe",
+    ".jfif",
+    ".jif",
+]
 
 
-app = Flask(__name__)
+app = Flask(
+    __name__, static_url_path="", static_folder="static", template_folder="templates"
+)
 limiter = Limiter(
     get_remote_address,
     app=app,
@@ -55,12 +97,15 @@ limiter = Limiter(
     storage_uri="memory://",
 )
 
+
 # Routing for static files
 @app.route("/security.txt")
 @app.route("/robots.txt")
 @app.route("/sitemap.xml")
 @app.route("/favicon.ico")
 def static_from_root():
+    if not app.static_folder:
+        app.static_folder = os.path.abspath(os.path.join(app.root_path, "static"))
     return send_from_directory(app.static_folder, request.path[1:])
 
 
@@ -83,20 +128,24 @@ def load_files_managed_from_file():
 
 files_managed = load_files_managed_from_file()
 
+
 # Updates the list of files stored in the temporary folder
 def save_files_managed_to_file():
     with open("files_managed.json", "w") as json_file:
         json.dump(files_managed, json_file)
+
 
 def sanitize_string(input_string):
     # Replace any character that is not a letter, number, or space with an underscore
     sanitized = re.sub(r"[^a-zA-Z0-9 ]", "_", input_string)
     return sanitized
 
+
 def is_valid_email(email):
     # Basic regex pattern for validating email
     pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
     return re.match(pattern, email) is not None
+
 
 # Returns a unique filename after removing whitespaces and implementing a counter if the filename already exists
 def generate_unique_filename(filename):
@@ -110,6 +159,7 @@ def generate_unique_filename(filename):
         counter += 1
     return filename
 
+
 # Deletes files that have expired
 def delete_old_files():
     while True:
@@ -122,7 +172,9 @@ def delete_old_files():
             if not os.path.exists(os.path.join(TEMP_FOLDER, filename)):
                 remove_from_json.append(link)
             else:
-                file_creation_time = os.path.getctime(os.path.join(TEMP_FOLDER, filename))
+                file_creation_time = os.path.getctime(
+                    os.path.join(TEMP_FOLDER, filename)
+                )
                 if current_time - file_creation_time >= del_time:
                     to_delete.append(link)
 
@@ -139,12 +191,14 @@ def delete_old_files():
         # Save the updated files_managed dictionary to a file
         save_files_managed_to_file()
 
-        time.sleep(60) # Checks every 1 minute
+        time.sleep(60)  # Checks every 1 minute
+
 
 # Keep the file management thread running in the background
 file_management_thread = threading.Thread(target=delete_old_files)
 file_management_thread.daemon = True
 file_management_thread.start()
+
 
 # Returns the total size of a folder in bytes
 def get_folder_size(path):
@@ -154,6 +208,7 @@ def get_folder_size(path):
             file_path = os.path.join(dirpath, filename)
             total_size += os.path.getsize(file_path)
     return total_size
+
 
 # Logging for access and uploads
 def log_message(logfile, content):
@@ -173,12 +228,13 @@ def log_message(logfile, content):
     io_thread = threading.Thread(target=write_to_logfile)
     io_thread.start()
 
+
 # Send email to the user
 def send_email(email_address, file_path, file_url, expiry):
     def email_task():
         if not is_valid_email(email_address):
             print("Invalid email address\n")
-        
+
         # Check for SMTP credentials
         if not all([SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_FROM, SMTP_PASSWORD]):
             log_message(UPLOAD_LOG_FILE, "SMTP credentials not provided")
@@ -202,7 +258,7 @@ def send_email(email_address, file_path, file_url, expiry):
             encoders.encode_base64(attachment)
             attachment.add_header(
                 "Content-Disposition",
-                f"attachment; filename={os.path.basename(file_path)}"
+                f"attachment; filename={os.path.basename(file_path)}",
             )
             message.attach(attachment)
         else:
@@ -217,15 +273,20 @@ def send_email(email_address, file_path, file_url, expiry):
             print("Email sent successfully!")
         except Exception as e:
             print(f"Error: {e}\n")
-    
+
     # Send the email in a separate thread to avoid blocking the main thread
     thread = threading.Thread(target=email_task)
     thread.start()
 
+
 @app.before_request
 def log_request():
     remote_addr = request.headers.get("X-Forwarded-For", request.remote_addr)
-    user_agent = request.headers.get("User-Agent", "Unknown").replace("\n", " ").replace(" ", "-")
+    user_agent = (
+        request.headers.get("User-Agent", "Unknown")
+        .replace("\n", " ")
+        .replace(" ", "-")
+    )
     date = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
     method = request.method
     path = request.path
@@ -235,13 +296,17 @@ def log_request():
         log_content = f"{remote_addr} {user_agent} {date} {method} {path} {scheme}\n"
         log_message(ACCESS_LOG_FILE, log_content)
 
+
 @app.route("/", methods=["GET"])
 def index():
-    return render_template("index.html", full_url=URL, umami_src=UMAMI_SRC, umami_id=UMAMI_ID)
+    return render_template(
+        "index.html", full_url=URL, umami_src=UMAMI_SRC, umami_id=UMAMI_ID
+    )
+
 
 @app.route("/", methods=["POST"])
 @limiter.limit(UPLOAD_RATE_LIMIT)
-def upload_file():    
+def upload_file():
     if "file" not in request.files:
         return "No file provided\n", 400
 
@@ -249,7 +314,7 @@ def upload_file():
 
     if uploaded_file.filename == "":
         return "No selected file\n", 400
-    
+
     filename = generate_unique_filename(uploaded_file.filename).lower()
     file_path = os.path.join(TEMP_FOLDER, filename)
 
@@ -264,7 +329,7 @@ def upload_file():
 
     del_time = float(request.form.get("time", DEFAULT_DEL_TIME))
     del_time = min(del_time, MAX_DEL_TIME) * 60 * 60
-    if del_time < 0 :
+    if del_time < 0:
         return "Invalid time\n", 400
 
     custom_link = request.form.get("link", filename)
@@ -274,25 +339,49 @@ def upload_file():
     else:
         custom_link = sanitize_string(custom_link.lower())
 
-    invalid_links = ["about", "robots.txt", "sitemap.xml", "shared", "security.txt", "favicon.ico"]
+    invalid_links = [
+        "about",
+        "robots.txt",
+        "sitemap.xml",
+        "shared",
+        "security.txt",
+        "favicon.ico",
+    ]
 
     if custom_link in files_managed or custom_link in invalid_links:
-        return f"The link you are looking for is already taken, Please try a different link\n", 400
+        return (
+            f"The link you are looking for is already taken, Please try a different link\n",
+            400,
+        )
 
     try:
         uploaded_file.save(file_path)
         if email_address is not None and email_address != "":
-            send_email(email_address, file_path, URL+"/"+custom_link, del_time/3600)
+            send_email(
+                email_address, file_path, URL + "/" + custom_link, del_time / 3600
+            )
         files_managed[custom_link] = (filename, del_time)
         save_files_managed_to_file()
 
         remote_addr = request.headers.get("X-Forwarded-For", request.remote_addr)
-        user_agent = request.headers.get("User-Agent", "Unknown").replace("\n", " ").replace(" ", "-")
+        user_agent = (
+            request.headers.get("User-Agent", "Unknown")
+            .replace("\n", " ")
+            .replace(" ", "-")
+        )
         date = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
-        log_content = f"{remote_addr} {user_agent} {date} {filename} {custom_link} {del_time}\n"
+        log_content = (
+            f"{remote_addr} {user_agent} {date} {filename} {custom_link} {del_time}\n"
+        )
         log_message(UPLOAD_LOG_FILE, log_content)
-        if "html" in request.headers.get("Accept"):
-            return render_template("shared.html", link=custom_link, full_url=URL, umami_src=UMAMI_SRC, umami_id=UMAMI_ID)
+        if "html" in str(request.headers.get("Accept", "")):
+            return render_template(
+                "shared.html",
+                link=custom_link,
+                full_url=URL,
+                umami_src=UMAMI_SRC,
+                umami_id=UMAMI_ID,
+            )
         else:
             return URL + "/" + custom_link
 
@@ -300,9 +389,13 @@ def upload_file():
         log_message(UPLOAD_LOG_FILE, f"Error: {e}")
         return f"Error: {e}\n", 500
 
+
 @app.route("/about", methods=["GET"])
 def about():
-    return render_template("about.html", full_url=URL, umami_src=UMAMI_SRC, umami_id=UMAMI_ID)
+    return render_template(
+        "about.html", full_url=URL, umami_src=UMAMI_SRC, umami_id=UMAMI_ID
+    )
+
 
 @app.route("/<link>", methods=["GET"])
 @limiter.limit(DOWNLOAD_RATE_LIMIT)
@@ -317,7 +410,10 @@ def share_file(link):
     _, ext = os.path.splitext(files_managed[link][0])
     is_img = ext in IMG_EXTENSIONS
 
-    return send_from_directory(TEMP_FOLDER, files_managed[link][0], as_attachment= not is_img)
+    return send_from_directory(
+        TEMP_FOLDER, files_managed[link][0], as_attachment=not is_img
+    )
+
 
 if __name__ == "__main__":
     app.run(debug=True)
