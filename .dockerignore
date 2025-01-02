@@ -1,0 +1,6 @@
+env/
+__pycache__/
+files_managed.json
+share_temp/*
+*.log
+.env

@@ -1,8 +1,6 @@
-# SWFT - Simple Web-based File Transfer
-
 SWFT is a lightweight and user-friendly web-based file sharing service that allows you to quickly and securely share files with others. With SWFT, you can easily upload files, get shareable links, and even customize links for easy sharing.
 
-# Table of Contents
+## Table of Contents
 
 - [Features](#features)
 - [Getting Started](#getting-started)
@@ -29,73 +27,59 @@ SWFT is a lightweight and user-friendly web-based file sharing service that allo
 
 ## Getting Started
 
-Follow these steps to set up and run SWFT on your server.
+Follow these steps to set up and run SWFT on your server using Docker.
 
 ### Prerequisites
 
-- Python 3.x
-- Flask (Python web framework)
-- pip (Python package manager)
+- Docker (Make sure Docker is installed and running on your server.)
 
 ### Installation
 
-Clone the SWFT repository to your server:
+To install SWFT via Docker, follow these steps:
 
-```bash
-git clone https://github.com/nnisarggada/swft
-cd swft
-```
+1. **Pull the Docker image:**
 
-Create a Python virtual environment and activate it:
+   Run the following command to pull the latest SWFT Docker image:
 
-```bash
-python -m venv env
-source env/bin/activate
-```
+   ```bash
+   docker pull docker.nnisarg.in/swft
+   ```
 
-Install the required dependencies from the `requirements.txt` file:
+2. **Get the sample `.env` file:**
 
-```bash
-pip install -r requirements.txt
-```
+   Before running the app, you need to configure it. To download the `.env.sample` file, use this command:
 
-### Configuration
+   ```bash
+   curl -o .env.sample https://raw.githubusercontent.com/nnisarggada/swft/refs/heads/main/.env.sample
+   ```
 
-Edit the SWFT configuration in the `.env` or `main.py` file to customize settings such as the port, URL, folder for storing files, and the time until files are deleted. Modify the following variables as needed:
+   Then, modify the `.env` file according to your environment. This file contains essential configuration settings such as:
 
-```python
-# -------------------------------------------------------------------
-# The following .env file needs to be changed before running the app using following variables: [SMTP_x and UMAMI_x are optional to use for sending emails]
-# -------------------------------------------------------------------
+   - `URL`: The URL of the hosted app.
+   - `TEMP_FOLDER`: Folder where the files will be stored temporarily.
+   - `DEFAULT_DEL_TIME`: Time until files will be deleted in hours.
+   - `MAX_CONTENT_LENGTH`: Maximum file size allowed (in MB).
+   - Optional: Email (SMTP) and analytics (UMAMI) settings if those features are required.
 
-URL = "share.nnisarg.in" # URL of the hosted app
-TEMP_FOLDER = "share_temp" # Folder where the files will stored temporarily
-MAX_TEMP_FOLDER_SIZE = 50 # Maximum size of the temporary folder in GB (50GB)
-DEFAULT_DEL_TIME = 3 # Time until files will be deleted in hours (3 hours)
-MAX_CONTENT_LENGTH = 100 # Maximum file size allowed in MB (100MB)
-MAX_DEL_TIME = 168 # Maximum time until files will be deleted in hours (24 hours)
-UPLOAD_LOG_FILE = "upload.log" # Log file for uploads
-ACCESS_LOG_FILE = "access.log" # Log file for access
-MAX_LOG_ENTRIES = 500 # Maximum number of log entries for each log file
-SMTP_SERVER = "smtp.gmail.com" # SMTP server URL without the protocol and port
-SMTP_PORT = 587 # SMTP port
-SMTP_USERNAME = "swft@nnisarg.in"  # Replace with username
-SMTP_FROM = "SWFT by Nnisarg Gada <swft@nnisarg.in>" # Replace with your email
-SMTP_PASSWORD = "yourpassword"  # Replace with your email password
-UMAMI_SRC = "https://umami.ls/script.js" # Replace with your Umami script src
-UMAMI_ID = "your_website_id" # Replace with your Umami website id
-# -------------------------------------------------------------------
-```
+3. **Create a `.env` file:**
+
+   After modifying the `.env.sample` file, rename it to `.env` in the same directory where the Docker container will run.
 
 ### Running the App
 
-Run the SWFT app by specifying the port number:
+After configuring the `.env` file, you can run the app using Docker:
 
-```bash
-gunicorn -b 0.0.0.0:5000 main:app
-```
+1. **Run the Docker container:**
 
-Here, `5000` is the port on which the app will run. You can access the SWFT web interface in your web browser at http://localhost:5000.
+   Run the following command to start SWFT in a Docker container:
+
+   ```bash
+   docker run -d -p 5000:5000 --env-file .env docker.nnisarg.in/swft
+   ```
+
+   This will start the SWFT app, and it will be accessible in your browser at `http://localhost:5000`.
+
+---
 
 ## Usage
 
@@ -109,12 +93,12 @@ You can use SWFT to perform the following actions:
 
 ### Share a File
 
-Use the provided shareable link to access the uploaded file. Customize links for easier sharing.  
-The user also has an option to send the files directly to your email by providing the email id. (Wait for some time and check spam/junk folder too)
+Use the provided shareable link to access the uploaded file. You can also customize links for easier sharing.  
+Additionally, there is an option to send the file to your email by providing your email address.
 
 ### Delete Files
 
-Uploaded files are automatically deleted after the specified time.
+Uploaded files are automatically deleted after the specified time, based on the configuration.
 
 ### Command-Line Usage (curl/wget)
 
@@ -124,14 +108,17 @@ SWFT supports sharing files using command-line tools like curl or wget. For exam
 curl -F "file=@/path/to/file" -F "link=my-secret-file" -F "time=3" -F "email=email@example.com" http://localhost:5000/
 ```
 
-This will give a shareable URL to the file like http://localhost:5000/my-secret-file that will get deleted after the provided time.  
-The Email and the Link are optional to use. Time should be provided in hours not exceeding 168 Hrs (1 Week).
+This will give a shareable URL to the file like `http://localhost:5000/my-secret-file`, which will be deleted after the specified time.
+
+The `email` and `link` parameters are optional. The `time` parameter should be provided in hours and should not exceed 168 hours (1 week).
+
+---
 
 ## TODO
 
 - [x] ~~Add support for sending files via email.~~
 - [x] ~~Implement rate limiting to prevent abuse.~~
-- [ ] Add logging for email-related actions.
+- [x] ~~Add logging for email-related actions.~~
 - [ ] Develop an admin dashboard for managing uploads and monitoring usage.
 
 ## License
