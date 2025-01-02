@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>🦅 Shared File! | SWFT | Simple Web-based File Transfer</title>
+    <title>Shared File! | SWFT | Simple Web-based File Transfer</title>
 
     <!-- SEO -->
-    <title>🦅 SWFT | Simple Web-based File Transfer</title>
+    <title>SWFT | Simple Web-based File Transfer</title>
     <meta
       name="description"
       content="SWFT is a lightweight and user-friendly web-based file sharing service that allows you to quickly and securely share files with others"
@@ -97,7 +97,7 @@
     <nav
       class="absolute top-0 left-0 w-screen h-20 bg-neutral-900 flex items-center justify-between p-4"
     >
-      <a href="/" class="text-4xl font-bold"> 🦅 SWFT </a>
+      <a href="/" class="text-4xl font-bold"> SWFT </a>
       <a
         href="https://github.com/nnisarggada/swft"
         target="_blank"
@@ -120,8 +120,14 @@
         {{ full_url }}/{{ link }}</a
       >
       <div class="flex items-center gap-6">
-        <i class="fas fa-copy text-xl" onclick="copyToClipboard()"></i>
-        <i class="fas fa-share text-xl" onclick="shareFile()"></i>
+        <i
+          class="fas fa-copy text-xl cursor-pointer"
+          onclick="copyToClipboard()"
+        ></i>
+        <i
+          class="fas fa-share text-xl cursor-pointer"
+          onclick="shareFile()"
+        ></i>
       </div>
     </div>
 

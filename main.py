@@ -1,21 +1,23 @@
-from flask import Flask, request, render_template, send_from_directory
-import os
-import time
-import threading
-import json
 from datetime import datetime
+from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import json
+import os
 import re
 import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.mime.base import MIMEBase
-from email import encoders
+import threading
+import time
+
 from dotenv import load_dotenv
+from flask import Flask, render_template, request, send_from_directory
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 
-load_dotenv()
+_ = load_dotenv()
 
 # ---------------------------------------------------------------------------------------------------
 # The following variables are extracted from the .env file and should be set before starting the app
@@ -59,13 +61,15 @@ SMTP_FROM = os.getenv(
 SMTP_PASSWORD = os.getenv(
     "SMTP_PASSWORD", "yourpassword"
 )  # SMTP password for sending emails
-UMAMI_SRC = os.getenv("UMAMI_SRC", "https://umami.ls/script.js")  # Umami script source
+# Umami script source
+UMAMI_SRC = os.getenv("UMAMI_SRC", "https://umami.ls/script.js")
 UMAMI_ID = os.getenv("UMAMI_ID", "your_website_id")  # Umami website id
-UPLOAD_RATE_LIMIT = os.getenv("UPLOAD_RATE_LIMIT", "5 per minute")  # Number of uploads
+UPLOAD_RATE_LIMIT = os.getenv(
+    "UPLOAD_RATE_LIMIT", "5 per minute")  # Number of uploads
 DOWNLOAD_RATE_LIMIT = os.getenv(
-    "DOWNLOAD_RATE_LIMIT", "10 per minute"
-)  # Number of downbloads
-STORAGE_URI = os.getenv("STORAGE_URI", "memory://")  # Storage URI for Flask Limiter
+    "DOWNLOAD_RATE_LIMIT", "10 per minute")  # Number of downbloads
+# Storage URI for Flask Limiter
+STORAGE_URI = os.getenv("STORAGE_URI", "memory://")
 
 # -------------------------------------------------------------------------------------
 # Image extensions that are supported by browsers to view directly without downloading
@@ -94,7 +98,7 @@ app = Flask(
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["1 per second"],
+    default_limits=["10 per second"],
     storage_uri="memory://",
 )
 
@@ -106,7 +110,8 @@ limiter = Limiter(
 @app.route("/favicon.ico")
 def static_from_root():
     if not app.static_folder:
-        app.static_folder = os.path.abspath(os.path.join(app.root_path, "static"))
+        app.static_folder = os.path.abspath(
+            os.path.join(app.root_path, "static"))
     return send_from_directory(app.static_folder, request.path[1:])
 
 
@@ -116,18 +121,19 @@ if not os.path.exists(TEMP_FOLDER):
 
 
 # Returns the total files stored in the temporary folder in json format
-def load_files_managed_from_file():
+def load_files_managed_from_file() -> dict[str, tuple[str, float]]:
     if os.path.exists("files_managed.json"):
         if os.path.getsize("files_managed.json") == 0:
             # Write if the file is empty.
             with open("files_managed.json", "w") as json_file:
-                json_file.write("{}")
+                _ = json_file.write("{}")
         with open("files_managed.json", "r") as json_file:
-            return json.load(json_file)
+            data: dict[str, tuple[str, float]] = json.load(json_file)
+            return data
     return {}
 
 
-files_managed = load_files_managed_from_file()
+files_managed: dict[str, tuple[str, float]] = load_files_managed_from_file()
 
 
 # Updates the list of files stored in the temporary folder
@@ -136,20 +142,20 @@ def save_files_managed_to_file():
         json.dump(files_managed, json_file)
 
 
-def sanitize_string(input_string):
+def sanitize_string(input_string: str):
     # Replace any character that is not a letter, number, or space with an underscore
     sanitized = re.sub(r"[^a-zA-Z0-9 ]", "_", input_string)
     return sanitized
 
 
-def is_valid_email(email):
+def is_valid_email(email: str):
     # Basic regex pattern for validating email
     pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
     return re.match(pattern, email) is not None
 
 
 # Returns a unique filename after removing whitespaces and implementing a counter if the filename already exists
-def generate_unique_filename(filename):
+def generate_unique_filename(filename: str):
     # Replace periods in the filename with underscores for security reasons CVE-2024–1086
     base, ext = os.path.splitext(filename)
     base = sanitize_string(base)
@@ -165,23 +171,19 @@ def generate_unique_filename(filename):
 def delete_old_files():
     while True:
         current_time = time.time()
-        to_delete = []
-        remove_from_json = []
+        to_delete: list[str] = []
+        remove_from_json: list[str] = []
 
         # Identify files that need to be deleted
         for link, (filename, del_time) in files_managed.items():
             if not os.path.exists(os.path.join(TEMP_FOLDER, filename)):
                 remove_from_json.append(link)
-            else:
-                file_creation_time = os.path.getctime(
-                    os.path.join(TEMP_FOLDER, filename)
-                )
-                if current_time - file_creation_time >= del_time:
-                    to_delete.append(link)
+            elif current_time >= del_time:
+                to_delete.append(link)
 
         # Remove expired files from json
         for link in remove_from_json:
-            files_managed.pop(link)
+            _ = files_managed.pop(link)
 
         # Actual deletion of files
         for link in to_delete:
@@ -202,7 +204,7 @@ file_management_thread.start()
 
 
 # Returns the total size of a folder in bytes
-def get_folder_size(path):
+def get_folder_size(path: str):
     total_size = 0
     for dirpath, _, filenames in os.walk(path):
         for filename in filenames:
@@ -211,11 +213,20 @@ def get_folder_size(path):
     return total_size
 
 
+def calculate_file_size(file: FileStorage) -> int:
+    size = 0
+    for chunk in file.stream:
+        size += len(chunk)
+    # Reset the file pointer to the beginning
+    file.seek(0)
+    return size
+
+
 # Logging for access and uploads
-def log_message(logfile, content):
+def log_message(logfile: str, content: str):
     def write_to_logfile():
         with open(logfile, "a") as file:
-            file.write(content + "\n")
+            _ = file.write(content + "\n")
 
         if os.path.exists(logfile):
             with open(logfile, "r") as file:
@@ -231,14 +242,13 @@ def log_message(logfile, content):
 
 
 # Send email to the user
-def send_email(email_address, file_path, file_url, expiry):
+def send_email(email_address: str, file_path: str, file_url: str, expiry: float):
     def email_task():
         if not is_valid_email(email_address):
             print("Invalid email address\n")
 
         # Check for SMTP credentials
         if not all([SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_FROM, SMTP_PASSWORD]):
-            log_message(UPLOAD_LOG_FILE, "SMTP credentials not provided")
             print("SMTP credentials not provided\n")
             print("Invalid SMTP credentials\n")
 
@@ -248,7 +258,8 @@ def send_email(email_address, file_path, file_url, expiry):
         message["To"] = email_address
         message["Subject"] = f"File shared with you via {URL}"
 
-        body = f"Hello {email_address} the file you provided has been attached to this email and the url where it was shared is: {file_url} and expires in {expiry} hours!"
+        body = f"Hello {email_address} the file you provided has been attached to this email and the url where it was shared is: {
+            file_url} and expires in {expiry} hours!"
         message.attach(MIMEText(body, "plain"))
 
         # Check if the file exists and attach it
@@ -268,9 +279,11 @@ def send_email(email_address, file_path, file_url, expiry):
         # Send the email
         try:
             with smtplib.SMTP(SMTP_SERVER, int(SMTP_PORT)) as server:
-                server.starttls()  # Upgrade the connection to secure
-                server.login(SMTP_USERNAME, SMTP_PASSWORD)  # Log in to the server
-                server.sendmail(SMTP_FROM, email_address, message.as_string())
+                _ = server.starttls()  # Upgrade the connection to secure
+                # Log in to the server
+                _ = server.login(SMTP_USERNAME, SMTP_PASSWORD)
+                _ = server.sendmail(
+                    SMTP_FROM, email_address, message.as_string())
             print("Email sent successfully!")
         except Exception as e:
             print(f"Error: {e}\n")
@@ -294,7 +307,8 @@ def log_request():
     scheme = request.scheme
 
     if method == "GET":
-        log_content = f"{remote_addr} {user_agent} {date} {method} {path} {scheme}\n"
+        log_content = f"{remote_addr} {user_agent} {
+            date} {method} {path} {scheme}\n"
         log_message(ACCESS_LOG_FILE, log_content)
 
 
@@ -316,12 +330,15 @@ def upload_file():
     if uploaded_file.filename == "":
         return "No selected file\n", 400
 
+    if not uploaded_file.filename:
+        return "No selected file\n", 400
+
     filename = generate_unique_filename(uploaded_file.filename).lower()
     file_path = os.path.join(TEMP_FOLDER, secure_filename(filename))
 
     folder_path = TEMP_FOLDER
     folder_size_bytes = get_folder_size(folder_path)
-    file_size_bytes = int(request.headers["Content-Length"])
+    file_size_bytes = calculate_file_size(uploaded_file)
 
     email_address = request.form.get("email")
 
@@ -361,10 +378,13 @@ def upload_file():
             send_email(
                 email_address, file_path, URL + "/" + custom_link, del_time / 3600
             )
-        files_managed[custom_link] = (filename, del_time)
+
+        expiry_time = time.time() + del_time
+        files_managed[custom_link] = (filename, expiry_time)
         save_files_managed_to_file()
 
-        remote_addr = request.headers.get("X-Forwarded-For", request.remote_addr)
+        remote_addr = request.headers.get(
+            "X-Forwarded-For", request.remote_addr)
         user_agent = (
             request.headers.get("User-Agent", "Unknown")
             .replace("\n", " ")
@@ -372,7 +392,8 @@ def upload_file():
         )
         date = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
         log_content = (
-            f"{remote_addr} {user_agent} {date} {filename} {custom_link} {del_time}\n"
+            f"{remote_addr} {user_agent} {date} {
+                filename} {custom_link} {del_time}\n"
         )
         log_message(UPLOAD_LOG_FILE, log_content)
         if "html" in str(request.headers.get("Accept", "")):
@@ -400,7 +421,7 @@ def about():
 
 @app.route("/<link>", methods=["GET"])
 @limiter.limit(DOWNLOAD_RATE_LIMIT)
-def share_file(link):
+def share_file(link: str):
 
     link = link.lower()
     is_img = False
