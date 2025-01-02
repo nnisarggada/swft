@@ -13,6 +13,7 @@ from email import encoders
 from dotenv import load_dotenv
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from werkzeug.utils import secure_filename
 
 load_dotenv()
 
@@ -316,7 +317,7 @@ def upload_file():
         return "No selected file\n", 400
 
     filename = generate_unique_filename(uploaded_file.filename).lower()
-    file_path = os.path.join(TEMP_FOLDER, filename)
+    file_path = os.path.join(TEMP_FOLDER, secure_filename(filename))
 
     folder_path = TEMP_FOLDER
     folder_size_bytes = get_folder_size(folder_path)
