@@ -1,3 +1,5 @@
+# SWFT - Simple Web-based File Transfer
+
 SWFT is a lightweight and user-friendly web-based file sharing service that allows you to quickly and securely share files with others. With SWFT, you can easily upload files, get shareable links, and even customize links for easy sharing.
 
 ## Table of Contents
