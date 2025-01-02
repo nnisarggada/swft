@@ -64,10 +64,10 @@ SMTP_PASSWORD = os.getenv(
 # Umami script source
 UMAMI_SRC = os.getenv("UMAMI_SRC", "https://umami.ls/script.js")
 UMAMI_ID = os.getenv("UMAMI_ID", "your_website_id")  # Umami website id
-UPLOAD_RATE_LIMIT = os.getenv(
-    "UPLOAD_RATE_LIMIT", "5 per minute")  # Number of uploads
+UPLOAD_RATE_LIMIT = os.getenv("UPLOAD_RATE_LIMIT", "5 per minute")  # Number of uploads
 DOWNLOAD_RATE_LIMIT = os.getenv(
-    "DOWNLOAD_RATE_LIMIT", "10 per minute")  # Number of downbloads
+    "DOWNLOAD_RATE_LIMIT", "10 per minute"
+)  # Number of downbloads
 # Storage URI for Flask Limiter
 STORAGE_URI = os.getenv("STORAGE_URI", "memory://")
 
@@ -110,8 +110,7 @@ limiter = Limiter(
 @app.route("/favicon.ico")
 def static_from_root():
     if not app.static_folder:
-        app.static_folder = os.path.abspath(
-            os.path.join(app.root_path, "static"))
+        app.static_folder = os.path.abspath(os.path.join(app.root_path, "static"))
     return send_from_directory(app.static_folder, request.path[1:])
 
 
@@ -245,12 +244,13 @@ def log_message(logfile: str, content: str):
 def send_email(email_address: str, file_path: str, file_url: str, expiry: float):
     def email_task():
         if not is_valid_email(email_address):
-            print("Invalid email address\n")
+            print(f"Invalid email address: {email_address}\n")
+            return
 
         # Check for SMTP credentials
         if not all([SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_FROM, SMTP_PASSWORD]):
             print("SMTP credentials not provided\n")
-            print("Invalid SMTP credentials\n")
+            return
 
         # Create the email message
         message = MIMEMultipart()
@@ -258,8 +258,8 @@ def send_email(email_address: str, file_path: str, file_url: str, expiry: float)
         message["To"] = email_address
         message["Subject"] = f"File shared with you via {URL}"
 
-        body = f"Hello {email_address} the file you provided has been attached to this email and the url where it was shared is: {
-            file_url} and expires in {expiry} hours!"
+        body = f"""Hello {email_address} the file you provided has been attached to this email and the url where it was shared is: {
+            file_url} and expires in {expiry} hours!"""
         message.attach(MIMEText(body, "plain"))
 
         # Check if the file exists and attach it
@@ -274,7 +274,7 @@ def send_email(email_address: str, file_path: str, file_url: str, expiry: float)
             )
             message.attach(attachment)
         else:
-            print("File not found, try without entering email")
+            return
 
         # Send the email
         try:
@@ -282,8 +282,7 @@ def send_email(email_address: str, file_path: str, file_url: str, expiry: float)
                 _ = server.starttls()  # Upgrade the connection to secure
                 # Log in to the server
                 _ = server.login(SMTP_USERNAME, SMTP_PASSWORD)
-                _ = server.sendmail(
-                    SMTP_FROM, email_address, message.as_string())
+                _ = server.sendmail(SMTP_FROM, email_address, message.as_string())
             print("Email sent successfully!")
         except Exception as e:
             print(f"Error: {e}\n")
@@ -307,8 +306,8 @@ def log_request():
     scheme = request.scheme
 
     if method == "GET":
-        log_content = f"{remote_addr} {user_agent} {
-            date} {method} {path} {scheme}\n"
+        log_content = f"""{remote_addr} | {user_agent}
+            | {date} | {method} | {path} | {scheme}\n"""
         log_message(ACCESS_LOG_FILE, log_content)
 
 
@@ -383,18 +382,15 @@ def upload_file():
         files_managed[custom_link] = (filename, expiry_time)
         save_files_managed_to_file()
 
-        remote_addr = request.headers.get(
-            "X-Forwarded-For", request.remote_addr)
+        remote_addr = request.headers.get("X-Forwarded-For", request.remote_addr)
         user_agent = (
             request.headers.get("User-Agent", "Unknown")
             .replace("\n", " ")
             .replace(" ", "-")
         )
         date = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
-        log_content = (
-            f"{remote_addr} {user_agent} {date} {
-                filename} {custom_link} {del_time}\n"
-        )
+        log_content = f"""{remote_addr} | {user_agent} | {date} | {
+            filename} {custom_link} {del_time} | {email_address}\n"""
         log_message(UPLOAD_LOG_FILE, log_content)
         if "html" in str(request.headers.get("Accept", "")):
             return render_template(
