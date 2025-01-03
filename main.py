@@ -112,6 +112,17 @@ class File(db.Model):
     expiry_time = db.Column(db.DateTime, nullable=False)
 
 
+# Routing for static files
+@app.route("/security.txt")
+@app.route("/robots.txt")
+@app.route("/sitemap.xml")
+@app.route("/favicon.ico")
+def static_from_root():
+    if not app.static_folder:
+        app.static_folder = os.path.abspath(os.path.join(app.root_path, "static"))
+    return send_from_directory(app.static_folder, request.path[1:])
+
+
 # Create the temporary folder if it does not exist
 if not os.path.exists(TEMP_FOLDER):
     os.makedirs(TEMP_FOLDER)
