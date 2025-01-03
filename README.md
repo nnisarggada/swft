@@ -84,7 +84,7 @@ After configuring the `.env` file, you can run the app using Docker:
    Run the following command to start SWFT in a Docker container:
 
    ```bash
-   docker run -d -p 5000:5000 --env-file .env swft --name swft
+   docker run -d -p 5000:5000 --env-file .env --name swft swft
    ```
 
    This will start the SWFT app, and it will be accessible in your browser at `http://localhost:5000`.
