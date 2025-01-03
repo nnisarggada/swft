@@ -39,15 +39,23 @@ Follow these steps to set up and run SWFT on your server using Docker.
 
 To install SWFT via Docker, follow these steps:
 
-1. **Pull the Docker image:**
+1. **Download the Docker image:**
 
-   Run the following command to pull the latest SWFT Docker image:
+   Run the following command to download the Docker image:
 
    ```bash
-   docker pull docker.nnisarg.in/swft
+   curl -O https://docker.nnisarg.in/swft.tar
    ```
 
-2. **Get the sample `.env` file:**
+2. **Load the Docker image:**
+
+   Run the following command to load the Docker image:
+
+   ```bash
+   docker load < swft.tar
+   ```
+
+3. **Get the sample `.env` file:**
 
    Before running the app, you need to configure it. To download the `.env.sample` file, use this command:
 
@@ -63,7 +71,7 @@ To install SWFT via Docker, follow these steps:
    - `MAX_CONTENT_LENGTH`: Maximum file size allowed (in MB).
    - Optional: Email (SMTP) and analytics (UMAMI) settings if those features are required.
 
-3. **Create a `.env` file:**
+4. **Create a `.env` file:**
 
    After modifying the `.env.sample` file, rename it to `.env` in the same directory where the Docker container will run.
 
@@ -76,7 +84,7 @@ After configuring the `.env` file, you can run the app using Docker:
    Run the following command to start SWFT in a Docker container:
 
    ```bash
-   docker run -d -p 5000:5000 --env-file .env docker.nnisarg.in/swft
+   docker run -d -p 5000:5000 --env-file .env swft --name swft
    ```
 
    This will start the SWFT app, and it will be accessible in your browser at `http://localhost:5000`.
