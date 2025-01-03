@@ -47,8 +47,10 @@ services:
     image: nginx:latest
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf # Mount Nginx configuration file
+    env_file:
+      - .env
     ports:
-      - "8080:80" # Exposing Nginx port on host (8080)
+      - "${PORT}:80" # Exposing Nginx port on host
     networks:
       - app_network
     depends_on:
