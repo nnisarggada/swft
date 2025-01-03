@@ -188,8 +188,10 @@ def send_email(email_address: str, file_path: str, file_url: str, expiry: float)
         message["From"] = SMTP_FROM
         message["To"] = email_address
         message["Subject"] = f"File shared with you via {URL}"
-        body = f"Hello, the file you provided is attached, and the URL is {
-            file_url}. It expires in {expiry} hours."
+        body = (
+            f"Hello, the file you provided is attached, and the URL is "
+            f"{file_url}. It expires in {expiry} hours."
+        )
         message.attach(MIMEText(body, "plain"))
         if os.path.exists(file_path):
             with open(file_path, "rb") as file:
@@ -280,6 +282,9 @@ def upload_file():
 
     custom_link = request.form.get("link", filename)
 
+    if custom_link == "":
+        custom_link = filename
+
     if custom_link != filename:
         custom_link = sanitize_string(custom_link)
 
@@ -360,4 +365,4 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     threading.Thread(target=delete_expired_files, daemon=True).start()
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)

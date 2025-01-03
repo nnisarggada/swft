@@ -4,3 +4,4 @@ files_managed.json
 share_temp/*
 *.log
 .env
+data/*
