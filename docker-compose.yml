@@ -1,0 +1,68 @@
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: swft # Database name
+      POSTGRES_USER: user # Database user
+      POSTGRES_PASSWORD: password # Database password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d swft"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 5s
+
+  app:
+    build: .
+    environment:
+      URL: "share.nnisarg.in"
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: swft
+      DB_USER: user
+      DB_PASSWORD: password
+      SMTP_SERVER: "smtp.gmail.com"
+      SMTP_PORT: 587
+      SMTP_USERNAME: "swft@nnisarg.in"
+      SMTP_FROM: "SWFT by Nnisarg Gada <swft@nnisarg.in>"
+      SMTP_PASSWORD: "yourpassword"
+      UMAMI_SRC: "https://umami.ls/script.js"
+      UMAMI_ID: "your_website_id"
+      USER_ID: "${UID}"
+      GROUP_ID: "${GID}"
+    user: "${USER_ID}:${GROUP_ID}"
+    ports:
+      - "5000"
+    deploy:
+      replicas: 1
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app_network
+    restart: always
+    volumes:
+      - ./data:/app/data # Mount local 'data' directory to '/app/data' in container
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf # Mount Nginx configuration file
+    ports:
+      - "8080:80" # Exposing Nginx port on host (8080)
+    networks:
+      - app_network
+    depends_on:
+      - app
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  app_network:
+    driver: bridge
