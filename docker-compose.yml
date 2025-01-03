@@ -19,6 +19,11 @@ services:
   app:
     build: .
     environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: swft
+      DB_USER: user
+      DB_PASSWORD: password
       # Other environment variables will be read from .env file
       USER_ID: "${UID}"
       GROUP_ID: "${GID}"
