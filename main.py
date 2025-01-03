@@ -1,9 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import json
 import os
 import re
 import smtplib
@@ -14,9 +13,11 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, request, send_from_directory
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask_sqlalchemy import SQLAlchemy
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 
+# Load environment variables
 _ = load_dotenv()
 
 # ---------------------------------------------------------------------------------------------------
@@ -24,9 +25,11 @@ _ = load_dotenv()
 # ---------------------------------------------------------------------------------------------------
 
 URL = os.getenv("URL", "https://share.nnisarg.in")  # Url of the hosted app
-TEMP_FOLDER = os.path.join(
-    os.getcwd(), os.getenv("TEMP_FOLDER", "share_temp")
-)  # Folder name where the files will stored temporarily
+DB_HOST = os.getenv("DB_HOST", "localhost")  # Database host
+DB_PORT = int(os.getenv("DB_PORT", 5432))  # Database port
+DB_USER = os.getenv("DB_USER", "postgres")  # Database user
+DB_PASSWORD = os.getenv("DB_PASSWORD", "password")  # Database password
+DB_NAME = os.getenv("DB_NAME", "swft")  # Database name
 MAX_TEMP_FOLDER_SIZE = (
     float(os.getenv("MAX_TEMP_FOLDER_SIZE", 50)) * 1024 * 1024 * 1024
 )  # Maximum size of the temporary folder in GB
@@ -91,10 +94,16 @@ IMG_EXTENSIONS = [
     ".jif",
 ]
 
+TEMP_FOLDER = os.path.join(os.path.dirname(__file__), "data")
+DB_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
+# Flask application setup
 app = Flask(
     __name__, static_url_path="", static_folder="static", template_folder="templates"
 )
+app.config["SQLALCHEMY_DATABASE_URI"] = DB_URL
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+db = SQLAlchemy(app)
 limiter = Limiter(
     get_remote_address,
     app=app,
@@ -103,15 +112,24 @@ limiter = Limiter(
 )
 
 
-# Routing for static files
-@app.route("/security.txt")
-@app.route("/robots.txt")
-@app.route("/sitemap.xml")
-@app.route("/favicon.ico")
-def static_from_root():
-    if not app.static_folder:
-        app.static_folder = os.path.abspath(os.path.join(app.root_path, "static"))
-    return send_from_directory(app.static_folder, request.path[1:])
+# Database models
+class File(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    link = db.Column(db.String(255), unique=True, nullable=False)
+    filename = db.Column(db.String(255), nullable=False)
+    expiry_time = db.Column(db.DateTime, nullable=False)
+
+
+class AccessLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.now())
+
+
+class UploadLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.now())
 
 
 # Create the temporary folder if it does not exist
@@ -119,41 +137,17 @@ if not os.path.exists(TEMP_FOLDER):
     os.makedirs(TEMP_FOLDER)
 
 
-# Returns the total files stored in the temporary folder in json format
-def load_files_managed_from_file() -> dict[str, tuple[str, float]]:
-    if os.path.exists("files_managed.json"):
-        if os.path.getsize("files_managed.json") == 0:
-            # Write if the file is empty.
-            with open("files_managed.json", "w") as json_file:
-                _ = json_file.write("{}")
-        with open("files_managed.json", "r") as json_file:
-            data: dict[str, tuple[str, float]] = json.load(json_file)
-            return data
-    return {}
-
-
-files_managed: dict[str, tuple[str, float]] = load_files_managed_from_file()
-
-
-# Updates the list of files stored in the temporary folder
-def save_files_managed_to_file():
-    with open("files_managed.json", "w") as json_file:
-        json.dump(files_managed, json_file)
-
-
+# Helper functions
 def sanitize_string(input_string: str):
-    # Replace any character that is not a letter, number, or space with an underscore
-    sanitized = re.sub(r"[^a-zA-Z0-9 ]", "_", input_string)
-    return sanitized
+    input_string = input_string.lower()
+    return re.sub(r"[^a-zA-Z0-9 ]", "_", input_string)
 
 
 def is_valid_email(email: str):
-    # Basic regex pattern for validating email
     pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
     return re.match(pattern, email) is not None
 
 
-# Returns a unique filename after removing whitespaces and implementing a counter if the filename already exists
 def generate_unique_filename(filename: str):
     # Replace periods in the filename with underscores for security reasons CVE-2024–1086
     base, ext = os.path.splitext(filename)
@@ -166,43 +160,6 @@ def generate_unique_filename(filename: str):
     return filename
 
 
-# Deletes files that have expired
-def delete_old_files():
-    while True:
-        current_time = time.time()
-        to_delete: list[str] = []
-        remove_from_json: list[str] = []
-
-        # Identify files that need to be deleted
-        for link, (filename, del_time) in files_managed.items():
-            if not os.path.exists(os.path.join(TEMP_FOLDER, filename)):
-                remove_from_json.append(link)
-            elif current_time >= del_time:
-                to_delete.append(link)
-
-        # Remove expired files from json
-        for link in remove_from_json:
-            _ = files_managed.pop(link)
-
-        # Actual deletion of files
-        for link in to_delete:
-            filename, _ = files_managed.pop(link)
-            file_path = os.path.join(TEMP_FOLDER, filename)
-            os.remove(file_path)
-
-        # Save the updated files_managed dictionary to a file
-        save_files_managed_to_file()
-
-        time.sleep(60)  # Checks every 1 minute
-
-
-# Keep the file management thread running in the background
-file_management_thread = threading.Thread(target=delete_old_files)
-file_management_thread.daemon = True
-file_management_thread.start()
-
-
-# Returns the total size of a folder in bytes
 def get_folder_size(path: str):
     total_size = 0
     for dirpath, _, filenames in os.walk(path):
@@ -221,48 +178,19 @@ def calculate_file_size(file: FileStorage) -> int:
     return size
 
 
-# Logging for access and uploads
-def log_message(logfile: str, content: str):
-    def write_to_logfile():
-        with open(logfile, "a") as file:
-            _ = file.write(content + "\n")
-
-        if os.path.exists(logfile):
-            with open(logfile, "r") as file:
-                entries = file.readlines()
-
-            if len(entries) > MAX_LOG_ENTRIES:
-                with open(logfile, "w") as file:
-                    file.writelines(entries[-MAX_LOG_ENTRIES:])
-
-    # Log parallely to avoid blocking the main thread
-    io_thread = threading.Thread(target=write_to_logfile)
-    io_thread.start()
-
-
-# Send email to the user
 def send_email(email_address: str, file_path: str, file_url: str, expiry: float):
     def email_task():
         if not is_valid_email(email_address):
-            print(f"Invalid email address: {email_address}\n")
             return
-
-        # Check for SMTP credentials
         if not all([SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_FROM, SMTP_PASSWORD]):
-            print("SMTP credentials not provided\n")
             return
-
-        # Create the email message
         message = MIMEMultipart()
         message["From"] = SMTP_FROM
         message["To"] = email_address
         message["Subject"] = f"File shared with you via {URL}"
-
-        body = f"""Hello {email_address} the file you provided has been attached to this email and the url where it was shared is: {
-            file_url} and expires in {expiry} hours!"""
+        body = f"Hello, the file you provided is attached, and the URL is {
+            file_url}. It expires in {expiry} hours."
         message.attach(MIMEText(body, "plain"))
-
-        # Check if the file exists and attach it
         if os.path.exists(file_path):
             with open(file_path, "rb") as file:
                 attachment = MIMEBase("application", "octet-stream")
@@ -273,23 +201,27 @@ def send_email(email_address: str, file_path: str, file_url: str, expiry: float)
                 f"attachment; filename={os.path.basename(file_path)}",
             )
             message.attach(attachment)
-        else:
-            return
-
-        # Send the email
         try:
             with smtplib.SMTP(SMTP_SERVER, int(SMTP_PORT)) as server:
-                _ = server.starttls()  # Upgrade the connection to secure
-                # Log in to the server
+                _ = server.starttls()
                 _ = server.login(SMTP_USERNAME, SMTP_PASSWORD)
                 _ = server.sendmail(SMTP_FROM, email_address, message.as_string())
-            print("Email sent successfully!")
         except Exception as e:
-            print(f"Error: {e}\n")
+            print(f"Error: {e}")
 
-    # Send the email in a separate thread to avoid blocking the main thread
-    thread = threading.Thread(target=email_task)
-    thread.start()
+    threading.Thread(target=email_task).start()
+
+
+def delete_expired_files():
+    with app.app_context():  # Activate application context
+        while True:
+            expired_files = File.query.filter(File.expiry_time < datetime.now()).all()
+            for file in expired_files:
+                if os.path.exists(os.path.join(TEMP_FOLDER, file.filename)):
+                    os.remove(os.path.join(TEMP_FOLDER, file.filename))
+                db.session.delete(file)
+                db.session.commit()
+            time.sleep(60)  # Check every minute
 
 
 @app.before_request
@@ -300,15 +232,17 @@ def log_request():
         .replace("\n", " ")
         .replace(" ", "-")
     )
-    date = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
     method = request.method
     path = request.path
     scheme = request.scheme
 
     if method == "GET":
-        log_content = f"""{remote_addr} | {user_agent}
-            | {date} | {method} | {path} | {scheme}\n"""
-        log_message(ACCESS_LOG_FILE, log_content)
+        log_content = (
+            f"{remote_addr} | {user_agent}" f"| {method} | {path} | {scheme}\n"
+        )
+        log = AccessLog(content=log_content)
+        db.session.add(log)
+        db.session.commit()
 
 
 @app.route("/", methods=["GET"])
@@ -325,36 +259,29 @@ def upload_file():
         return "No file provided\n", 400
 
     uploaded_file = request.files["file"]
-
-    if uploaded_file.filename == "":
+    if not uploaded_file or not uploaded_file.filename or uploaded_file.filename == "":
         return "No selected file\n", 400
 
-    if not uploaded_file.filename:
-        return "No selected file\n", 400
-
-    filename = generate_unique_filename(uploaded_file.filename).lower()
+    filename = generate_unique_filename(uploaded_file.filename)
     file_path = os.path.join(TEMP_FOLDER, secure_filename(filename))
 
-    folder_path = TEMP_FOLDER
-    folder_size_bytes = get_folder_size(folder_path)
+    folder_size_bytes = get_folder_size(TEMP_FOLDER)
     file_size_bytes = calculate_file_size(uploaded_file)
 
-    email_address = request.form.get("email")
-
-    if (folder_size_bytes + file_size_bytes) >= MAX_TEMP_FOLDER_SIZE:
-        return "Server Space Full :/\nTry again later\n", 400
+    if (folder_size_bytes + file_size_bytes) > MAX_TEMP_FOLDER_SIZE:
+        return "Server Space Full :/\nTry again later", 400
 
     del_time = float(request.form.get("time", DEFAULT_DEL_TIME))
-    del_time = min(del_time, MAX_DEL_TIME) * 60 * 60
+    del_time = min(del_time, MAX_DEL_TIME)
     if del_time < 0:
         return "Invalid time\n", 400
 
+    email_address = request.form.get("email")
+
     custom_link = request.form.get("link", filename)
 
-    if custom_link == "":
-        custom_link = filename
-    else:
-        custom_link = sanitize_string(custom_link.lower())
+    if custom_link != filename:
+        custom_link = sanitize_string(custom_link)
 
     invalid_links = [
         "about",
@@ -365,22 +292,28 @@ def upload_file():
         "favicon.ico",
     ]
 
-    if custom_link in files_managed or custom_link in invalid_links:
-        return (
-            f"The link you are looking for is already taken, Please try a different link\n",
-            400,
-        )
+    if custom_link in invalid_links:
+        return "Invalid link\n", 400
+
+    if File.query.filter_by(link=custom_link).first():
+        return "Link already taken\n", 400
 
     try:
         uploaded_file.save(file_path)
+
+        # convert del_time to datetime object
+        expiry_time = datetime.now() + timedelta(hours=del_time)
+
+        file_record = File(link=custom_link, filename=filename, expiry_time=expiry_time)
+        db.session.add(file_record)
+        db.session.commit()
+
         if email_address is not None and email_address != "":
             send_email(
                 email_address, file_path, URL + "/" + custom_link, del_time / 3600
             )
-
-        expiry_time = time.time() + del_time
-        files_managed[custom_link] = (filename, expiry_time)
-        save_files_managed_to_file()
+        else:
+            email_address = ""
 
         remote_addr = request.headers.get("X-Forwarded-For", request.remote_addr)
         user_agent = (
@@ -388,10 +321,15 @@ def upload_file():
             .replace("\n", " ")
             .replace(" ", "-")
         )
-        date = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
-        log_content = f"""{remote_addr} | {user_agent} | {date} | {
-            filename} {custom_link} {del_time} | {email_address}\n"""
-        log_message(UPLOAD_LOG_FILE, log_content)
+        log_content = (
+            f"{remote_addr} | {user_agent} | "
+            f"{filename} {custom_link} {del_time} | {email_address}\n"
+        )
+
+        log = UploadLog(content=log_content)
+        db.session.add(log)
+        db.session.commit()
+
         if "html" in str(request.headers.get("Accept", "")):
             return render_template(
                 "shared.html",
@@ -404,34 +342,22 @@ def upload_file():
             return URL + "/" + custom_link
 
     except Exception as e:
-        log_message(UPLOAD_LOG_FILE, f"Error: {e}")
         return f"Error: {e}\n", 500
-
-
-@app.route("/about", methods=["GET"])
-def about():
-    return render_template(
-        "about.html", full_url=URL, umami_src=UMAMI_SRC, umami_id=UMAMI_ID
-    )
 
 
 @app.route("/<link>", methods=["GET"])
 @limiter.limit(DOWNLOAD_RATE_LIMIT)
 def share_file(link: str):
-
-    link = link.lower()
-    is_img = False
-
-    if link not in files_managed:
+    file = File.query.filter_by(link=link).first()
+    if not file:
         return "Invalid link\n", 400
-
-    _, ext = os.path.splitext(files_managed[link][0])
+    _, ext = os.path.splitext(file.filename)
     is_img = ext in IMG_EXTENSIONS
-
-    return send_from_directory(
-        TEMP_FOLDER, files_managed[link][0], as_attachment=not is_img
-    )
+    return send_from_directory(TEMP_FOLDER, file.filename, as_attachment=not is_img)
 
 
 if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
+    threading.Thread(target=delete_expired_files, daemon=True).start()
     app.run(debug=True)
