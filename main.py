@@ -42,15 +42,6 @@ MAX_CONTENT_LENGTH = (
 MAX_DEL_TIME = float(
     os.getenv("MAX_DEL_TIME", 168)
 )  # Maximum time until files will be deleted in hours
-UPLOAD_LOG_FILE = os.path.join(
-    os.getcwd(), os.getenv("UPLOAD_LOG_FILE", "upload.log")
-)  # Log file for uploads
-ACCESS_LOG_FILE = os.path.join(
-    os.getcwd(), os.getenv("ACCESS_LOG_FILE", "access.log")
-)  # Log file for access
-MAX_LOG_ENTRIES = int(
-    os.getenv("MAX_LOG_ENTRIES", 500)
-)  # Maximum number of log entries for each log file
 SMTP_SERVER = os.getenv(
     "SMTP_SERVER", "smtp.gmail.com"
 )  # SMTP server for sending emails
@@ -101,6 +92,7 @@ DB_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 app = Flask(
     __name__, static_url_path="", static_folder="static", template_folder="templates"
 )
+app.logger.setLevel("ERROR")
 app.config["SQLALCHEMY_DATABASE_URI"] = DB_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
@@ -118,18 +110,6 @@ class File(db.Model):
     link = db.Column(db.String(255), unique=True, nullable=False)
     filename = db.Column(db.String(255), nullable=False)
     expiry_time = db.Column(db.DateTime, nullable=False)
-
-
-class AccessLog(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.now())
-
-
-class UploadLog(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.now())
 
 
 # Create the temporary folder if it does not exist
@@ -234,17 +214,17 @@ def log_request():
         .replace("\n", " ")
         .replace(" ", "-")
     )
+    time = datetime.now()
     method = request.method
     path = request.path
     scheme = request.scheme
 
     if method == "GET":
         log_content = (
-            f"{remote_addr} | {user_agent}" f"| {method} | {path} | {scheme}\n"
+            f"{time} | {remote_addr} | {user_agent} | "
+            f"{method} | {path} | {scheme}\n"
         )
-        log = AccessLog(content=log_content)
-        db.session.add(log)
-        db.session.commit()
+        print(log_content, end="")
 
 
 @app.route("/", methods=["GET"])
@@ -326,14 +306,12 @@ def upload_file():
             .replace("\n", " ")
             .replace(" ", "-")
         )
+        time = datetime.now()
         log_content = (
-            f"{remote_addr} | {user_agent} | "
+            f"{time} {remote_addr} | {user_agent} | "
             f"{filename} {custom_link} {del_time} | {email_address}\n"
         )
-
-        log = UploadLog(content=log_content)
-        db.session.add(log)
-        db.session.commit()
+        print(log_content, end="")
 
         if "html" in str(request.headers.get("Accept", "")):
             return render_template(
