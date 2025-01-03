@@ -19,19 +19,7 @@ services:
   app:
     build: .
     environment:
-      URL: "share.nnisarg.in"
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: swft
-      DB_USER: user
-      DB_PASSWORD: password
-      SMTP_SERVER: "smtp.gmail.com"
-      SMTP_PORT: 587
-      SMTP_USERNAME: "swft@nnisarg.in"
-      SMTP_FROM: "SWFT by Nnisarg Gada <swft@nnisarg.in>"
-      SMTP_PASSWORD: "yourpassword"
-      UMAMI_SRC: "https://umami.ls/script.js"
-      UMAMI_ID: "your_website_id"
+      # Other environment variables will be read from .env file
       USER_ID: "${UID}"
       GROUP_ID: "${GID}"
     user: "${USER_ID}:${GROUP_ID}"
