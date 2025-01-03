@@ -28,6 +28,8 @@ services:
       USER_ID: "${UID}"
       GROUP_ID: "${GID}"
     user: "${USER_ID}:${GROUP_ID}"
+    env_file:
+      - .env
     ports:
       - "5000"
     deploy:
