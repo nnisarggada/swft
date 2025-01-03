@@ -181,7 +181,7 @@ def send_email(email_address: str, file_path: str, file_url: str, expiry: float)
         message["Subject"] = f"File shared with you via {URL}"
         body = (
             f"Hello, the file you provided is attached, and the URL is "
-            f"{file_url}. It expires in {expiry} hours."
+            f"{file_url}. It expires in {round(expiry, 2)} hours."
         )
         message.attach(MIMEText(body, "plain"))
         if os.path.exists(file_path):
@@ -305,9 +305,7 @@ def upload_file():
         db.session.commit()
 
         if email_address is not None and email_address != "":
-            send_email(
-                email_address, file_path, URL + "/" + custom_link, del_time / 3600
-            )
+            send_email(email_address, file_path, URL + "/" + custom_link, del_time)
         else:
             email_address = ""
 
