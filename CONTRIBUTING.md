@@ -12,100 +12,136 @@ Thank you for considering contributing to SWFT! We appreciate your interest in m
 - [Development Setup](#development-setup)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
-  - [Configuration](#configuration)
   - [Running the App](#running-the-app)
+  - [Testing Your Changes](#testing-your-changes)
+  - [Running Commands in the App Container](#running-commands-in-the-app-container)
+
+---
 
 ## Code of Conduct
 
 Before contributing, please review our [Code of Conduct](CODE_OF_CONDUCT.md). We expect all contributors to adhere to this code to create a welcoming and inclusive community.
 
+---
+
 ## How Can I Contribute?
 
 ### Reporting Bugs
 
-If you encounter a bug while using SWFT or have identified a potential issue, please [open a new issue](https://github.com/nnisarggada/swft/issues/new) on our GitHub repository. Ensure that your report includes detailed information about the problem, such as the steps to reproduce it and any relevant error messages.
+If you encounter a bug while using SWFT or have identified a potential issue, please [open a new issue](https://github.com/nnisarggada/swft/issues/new) on our GitHub repository. Ensure that your report includes:
+
+- A clear and descriptive title.
+- Steps to reproduce the problem.
+- Any relevant error messages or screenshots.
 
 ### Suggesting Enhancements
 
-If you have ideas for new features or improvements to existing ones, feel free to [create an enhancement request](https://github.com/nnisarggada/swft/issues/new) on GitHub. Be clear and specific about the proposed enhancement and how it would benefit SWFT.
+Have an idea for improving SWFT? [Create an enhancement request](https://github.com/nnisarggada/swft/issues/new) on GitHub. Include:
+
+- A concise description of the enhancement.
+- The problem it addresses or the value it adds.
+- Any additional details or examples to support your suggestion.
 
 ### Submitting Changes
 
-If you'd like to contribute code to SWFT, follow these steps:
+To contribute code to SWFT:
 
 1. Fork the SWFT repository on GitHub.
-2. Create a new branch from the `main` branch to work on your changes.
-3. Make your changes and ensure that they follow the project's coding standards.
+2. Create a feature branch based on the `main` branch.
+3. Implement your changes while adhering to coding standards.
 4. Test your changes thoroughly.
-5. Create a pull request (PR) describing your changes, explaining their purpose, and providing steps for testing.
-6. Be prepared to respond to feedback and make necessary adjustments.
+5. Create a pull request (PR) describing your changes, including:
+   - The purpose of the changes.
+   - Any issues fixed or features added.
+   - Instructions for testing.
+
+Be prepared to discuss your PR and address any requested changes.
+
+---
 
 ## Development Setup
 
-To set up a development environment for SWFT, follow these steps:
+To set up a development environment for SWFT using Docker, follow these steps:
 
 ### Prerequisites
 
-- Python 3.x
-- Flask (Python web framework)
-- pip (Python package manager)
+- Docker
+- Docker Compose
 
 ### Installation
 
-Clone the SWFT repository to your server:
+1. **Clone the Repository:**
 
-```bash
-git clone https://github.com/nnisarggada/swft
-cd swft
-```
+   ```bash
+   git clone https://github.com/nnisarggada/swft
+   cd swft
+   ```
 
-Create a Python virtual environment and activate it:
+2. **Set Up the Environment:**
 
-```bash
-python -m venv env
-source env/bin/activate
-```
+   Copy the sample `.env` file:
 
-Install the required dependencies from the `requirements.txt` file:
+   ```bash
+   cp .env.sample .env
+   ```
 
-```bash
-pip install -r requirements.txt
-```
+   Edit the `.env` file to configure the development environment. Essential variables include:
 
-### Configuration
+   ```bash
+   URL = "http://localhost:8080" # URL of the hosted app
+   PORT = 8080 # Port of the app
+   DB_HOST = "db" # Database host (as defined in docker-compose)
+   DB_PORT = 5432 # Database port
+   DB_NAME = "swft_dev" # Database name
+   DB_USER = "postgres" # Database user
+   DB_PASSWORD = "password" # Database password
+   ```
 
-Edit the SWFT configuration in the `.env` or `main.py` file to customize settings such as the port, URL, folder for storing files, and the time until files are deleted. Modify the following variables as needed:
-
-```python
-# -------------------------------------------------------------------
-# The following .env file needs to be changed before running the app using following variables: [SMTP_x and UMAMI_x are optional to use for sending emails]
-# -------------------------------------------------------------------
-
-URL = "share.nnisarg.in" # URL of the hosted app
-TEMP_FOLDER = "share_temp" # Folder where the files will stored temporarily
-MAX_TEMP_FOLDER_SIZE = 50 # Maximum size of the temporary folder in GB (50GB)
-DEFAULT_DEL_TIME = 3 # Time until files will be deleted in hours (3 hours)
-MAX_CONTENT_LENGTH = 100 # Maximum file size allowed in MB (100MB)
-MAX_DEL_TIME = 168 # Maximum time until files will be deleted in hours (24 hours)
-UPLOAD_LOG_FILE = "upload.log" # Log file for uploads
-ACCESS_LOG_FILE = "access.log" # Log file for access
-MAX_LOG_ENTRIES = 500 # Maximum number of log entries for each log file
-SMTP_SERVER = "smtp.gmail.com" # SMTP server URL without the protocol and port
-SMTP_PORT = 587 # SMTP port
-SMTP_USERNAME = "swft@nnisarg.in"  # Replace with username
-SMTP_FROM = "SWFT by Nnisarg Gada <swft@nnisarg.in>" # Replace with your email
-SMTP_PASSWORD = "yourpassword"  # Replace with your email password
-UMAMI_SRC = "https://umami.ls/script.js" # Replace with your Umami script src
-UMAMI_ID = "your_website_id" # Replace with your Umami website id
-# -------------------------------------------------------------------
-```
+   Ensure the database host (`db`) matches the service name in the `docker-compose.yml` file.
 
 ### Running the App
 
-Run the SWFT app by specifying the port number:
+1. **Start the App:**
+
+   Use Docker Compose to bring up the app and database containers:
+
+   ```bash
+   docker-compose up --build
+   ```
+
+   This starts the application on `http://localhost:8080` and sets up a PostgreSQL database.
+
+2. **Access the Logs:**
+
+   View logs using:
+
+   ```bash
+   docker-compose logs -f app
+   ```
+
+3. **Stop the App:**
+
+   Shut down the containers with:
+
+   ```bash
+   docker-compose down
+   ```
+
+### Testing Your Changes
+
+- Edit the application files in the local repository. Changes will be reflected in the running container if the `docker-compose.yml` file uses volume mounts to sync code between your local machine and the container.
+- Run tests to verify the behavior of your changes.
+
+### Running Commands in the App Container
+
+To execute commands inside the app container, use:
 
 ```bash
-gunicorn -b 0.0.0.0:5000 main:app
+docker exec -it swft-app sh
 ```
 
-Here, `5000` is the port on which the app will run. You can access the SWFT web interface in your web browser at http://localhost:5000.
+Replace `swft-app` with the actual container name for the app.
+
+---
+
+Thank you for your contributions! Together, we can make SWFT a more robust and user-friendly file sharing service.
