@@ -6,7 +6,6 @@ SWFT is a lightweight and user-friendly web-based file sharing service that allo
 
 - [Features](#features)
 - [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
   - [Installation](#installation)
   - [Configuration](#configuration)
   - [Running the App](#running-the-app)
@@ -31,63 +30,54 @@ SWFT is a lightweight and user-friendly web-based file sharing service that allo
 
 Follow these steps to set up and run SWFT on your server using Docker.
 
-### Prerequisites
-
-- Docker (Make sure Docker is installed and running on your server.)
-
 ### Installation
 
-To install SWFT via Docker, follow these steps:
+To install SWFT using Docker, follow these steps:
 
-1. **Download the Docker image:**
+1. **Clone the SWFT repository:**
 
-   Run the following command to download the Docker image:
-
-   ```bash
-   curl -O https://docker.nnisarg.in/swft.tar
-   ```
-
-2. **Load the Docker image:**
-
-   Run the following command to load the Docker image:
+   Clone the SWFT repository from GitHub to your local machine:
 
    ```bash
-   docker load < swft.tar
+   git clone https://github.com/nnisarggada/swft.git
+   cd swft
    ```
 
-3. **Get the sample `.env` file:**
+2. **Copy the sample `.env` file:**
 
-   Before running the app, you need to configure it. To download the `.env.sample` file, use this command:
+   Copy the `.env.sample` file to create a `.env` file for configuration:
 
    ```bash
-   curl -o .env.sample https://raw.githubusercontent.com/nnisarggada/swft/refs/heads/main/.env.sample
+   cp .env.sample .env
    ```
 
-   Then, modify the `.env` file according to your environment. This file contains essential configuration settings such as:
+3. **Run the app using Docker Compose:**
 
-   - `URL`: The URL of the hosted app.
-   - `TEMP_FOLDER`: Folder where the files will be stored temporarily.
-   - `DEFAULT_DEL_TIME`: Time until files will be deleted in hours.
-   - `MAX_CONTENT_LENGTH`: Maximum file size allowed (in MB).
-   - Optional: Email (SMTP) and analytics (UMAMI) settings if those features are required.
+   Start SWFT with the following command:
 
-4. **Create a `.env` file:**
+   ```bash
+   docker-compose up -d
+   ```
 
-   After modifying the `.env.sample` file, rename it to `.env` in the same directory where the Docker container will run.
+### Configuration
+
+Modify the `.env` file to suit your environment. At minimum, configure the following variables:
+
+```bash
+URL = "https://share.nnisarg.in" # URL of the hosted app
+PORT = 8080 # Port of the hosted app
+DB_HOST = "localhost" # Database host
+DB_PORT = 5432 # Database port
+DB_NAME = "swft" # Database name
+DB_USER = "postgres" # Database user
+DB_PASSWORD = "password" # Database password
+```
+
+Additional settings can be configured as needed (e.g., email notifications, rate limits, analytics).
 
 ### Running the App
 
-After configuring the `.env` file, you can run the app using Docker:
-
-1. **Run the Docker container:**
-
-   Run the following command to start SWFT in a Docker container:
-
-   ```bash
-   docker run -d -p 5000:5000 --env-file .env --name swft swft
-   ```
-
-   This will start the SWFT app, and it will be accessible in your browser at `http://localhost:5000`.
+Once configured, run the app using Docker Compose as described above. The app will be accessible in your browser at `http://localhost:8080`.
 
 ---
 
@@ -115,10 +105,10 @@ Uploaded files are automatically deleted after the specified time, based on the 
 SWFT supports sharing files using command-line tools like curl or wget. For example:
 
 ```bash
-curl -F "file=@/path/to/file" -F "link=my-secret-file" -F "time=3" -F "email=email@example.com" http://localhost:5000/
+curl -F "file=@/path/to/file" -F "link=my-secret-file" -F "time=3" -F "email=email@example.com" http://localhost:8080/
 ```
 
-This will give a shareable URL to the file like `http://localhost:5000/my-secret-file`, which will be deleted after the specified time.
+This will give a shareable URL to the file like `http://localhost:8080/my-secret-file`, which will be deleted after the specified time.
 
 The `email` and `link` parameters are optional. The `time` parameter should be provided in hours and should not exceed 168 hours (1 week).
 
