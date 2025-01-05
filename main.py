@@ -256,7 +256,8 @@ def upload_file():
         return "No selected file\n", 400
 
     filename = generate_unique_filename(uploaded_file.filename)
-    file_path = os.path.join(TEMP_FOLDER, secure_filename(filename))
+    filename = secure_filename(filename)
+    file_path = os.path.join(TEMP_FOLDER, filename)
 
     folder_size_bytes = get_folder_size(TEMP_FOLDER)
     file_size_bytes = calculate_file_size(uploaded_file)
