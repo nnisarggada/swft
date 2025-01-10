@@ -13,7 +13,6 @@ Thank you for considering contributing to SWFT! We appreciate your interest in m
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
   - [Running the App](#running-the-app)
-  - [Testing Your Changes](#testing-your-changes)
   - [Running Commands in the App Container](#running-commands-in-the-app-container)
 
 ---
@@ -61,12 +60,13 @@ Be prepared to discuss your PR and address any requested changes.
 
 ## Development Setup
 
-To set up a development environment for SWFT using Docker, follow these steps:
+To set up a development environment for SWFT using a virtual environment, follow these steps:
 
 ### Prerequisites
 
-- Docker
-- Docker Compose
+- Python 3.7 or higher
+- `pip`
+- `virtualenv` (optional, if you want to use it)
 
 ### Installation
 
@@ -77,7 +77,37 @@ To set up a development environment for SWFT using Docker, follow these steps:
    cd swft
    ```
 
-2. **Set Up the Environment:**
+2. **Create and Activate the Virtual Environment:**
+
+   Use Python's built-in `venv` module to create a virtual environment:
+
+   ```bash
+   python3 -m venv env
+   ```
+
+   Then, activate the virtual environment:
+
+   - On **Linux/macOS**:
+
+     ```bash
+     source env/bin/activate
+     ```
+
+   - On **Windows**:
+
+     ```bash
+     .\env\Scripts\activate
+     ```
+
+3. **Install the Dependencies:**
+
+   With the virtual environment activated, install the required dependencies from the `requirements.txt` file:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Set Up the Environment:**
 
    Copy the sample `.env` file:
 
@@ -90,57 +120,39 @@ To set up a development environment for SWFT using Docker, follow these steps:
    ```bash
    URL = "http://localhost:8080" # URL of the hosted app
    PORT = 8080 # Port of the app
-   DB_HOST = "db" # Database host (as defined in docker-compose)
+   DB_HOST = "localhost" # Database host (you can use a local database like PostgreSQL)
    DB_PORT = 5432 # Database port
    DB_NAME = "swft_dev" # Database name
    DB_USER = "postgres" # Database user
    DB_PASSWORD = "password" # Database password
    ```
 
-   Ensure the database host (`db`) matches the service name in the `docker-compose.yml` file.
+   Ensure that the database host (`localhost`) corresponds to the service where you are running your database.
 
 ### Running the App
 
-1. **Start the App:**
+1. **Run the Application:**
 
-   Use Docker Compose to bring up the app and database containers:
+   Start the application by running the following command:
 
    ```bash
-   docker-compose up --build
+   python app.py
    ```
 
-   This starts the application on `http://localhost:8080` and sets up a PostgreSQL database.
+   This should start the application on `http://localhost:8080`.
 
 2. **Access the Logs:**
 
-   View logs using:
-
-   ```bash
-   docker-compose logs -f app
-   ```
+   If the app has logging configured, you can view the logs from the console output when running the application.
 
 3. **Stop the App:**
 
-   Shut down the containers with:
+   To stop the app, simply press `Ctrl+C` in the terminal.
 
-   ```bash
-   docker-compose down
-   ```
 
-### Testing Your Changes
+### Running Commands in the App Environment
 
-- Edit the application files in the local repository. Changes will be reflected in the running container if the `docker-compose.yml` file uses volume mounts to sync code between your local machine and the container.
-- Run tests to verify the behavior of your changes.
-
-### Running Commands in the App Container
-
-To execute commands inside the app container, use:
-
-```bash
-docker exec -it swft-app sh
-```
-
-Replace `swft-app` with the actual container name for the app.
+If you need to run commands in the virtual environment, make sure it's activated (`source env/bin/activate` on macOS/Linux, `.env\Scripts\activate` on Windows), and execute any necessary commands from the terminal.
 
 ---
 
