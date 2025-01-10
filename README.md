@@ -79,9 +79,7 @@ Additional settings can be configured as needed (e.g., email notifications, rate
 ### Running the App
 
 Once configured, run the app using Docker Compose as described above. The app will be accessible in your browser at `http://localhost:8080`.
-The admin dashboard can be accessed at `http://localhost:8080/admin`.
-
-Note: If you want to run the app on a different port, you can update the `PORT` variable in the `.env` file.
+The admin dashboard can be accessed at `http://localhost:8080/admin`. Use `admin` as the username and the default admin password is `swft`.
 
 ---
 
