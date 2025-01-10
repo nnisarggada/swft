@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard | SWFT | Simple Web-based File Transfer</title>
+
+  <!-- SEO -->
+  <meta name="description"
+    content="Admin Dashboard for managing files in SWFT, a lightweight web-based file sharing service." />
+  <meta name="keywords" content="admin, dashboard, file management, SWFT" />
+  <meta name="author" content="https://github.com/nnisarggada/swft/graphs/contributors" />
+  <meta name="publisher" content="Nnisarg Gada" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="{{ full_url }}" />
+  <meta property="og:title" content="SWFT Admin Dashboard" />
+  <meta property="og:description"
+    content="Admin Dashboard for managing files in SWFT, a lightweight web-based file sharing service." />
+  <meta property="og:site_name" content="SWFT Admin Dashboard" />
+  <meta property="og:locale" content="en_US" />
+  <link rel="canonical" href="{{ full_url }}" />
+  <!-- SEO -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/0b92670209.js" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            poppins: ["Poppins"],
+          },
+        },
+      },
+    };
+  </script>
+</head>
+
+<body
+  class="bg-neutral-950 text-white font-poppins flex flex-col items-center min-h-screen justify-between overflow-x-hidden">
+  <nav class="absolute top-0 left-0 w-full h-20 bg-neutral-900">
+    <div class="flex items-center justify-between p-4 w-full h-full max-w-7xl mx-auto">
+      <a href="/" class="text-3xl md:text-4xl font-bold">SWFT</a>
+      <a href="https://github.com/nnisarggada/swft" target="_blank" class="text-3xl md:text-4xl">
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+  </nav>
+
+  <div class="w-full max-w-7xl text-xl tracking-wider flex flex-col justify-center gap-6 p-4 my-32">
+    <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold">Admin Dashboard</h1>
+
+    <h3 class="text-2xl sm:text-3xl font-bold mb-4">Active Files <span class="text-neutral-500">({{ data['total_files']
+        }})</span></h3>
+    <div class="overflow-x-auto bg-neutral-800 rounded shadow-xl">
+      <table class="min-w-full text-sm text-center text-neutral-200">
+        <thead>
+          <tr class="bg-neutral-700">
+            <th class="px-6 py-3 font-medium text-neutral-100">Link</th>
+            <th class="px-6 py-3 font-medium text-neutral-100">Filename</th>
+            <th class="px-6 py-3 font-medium text-neutral-100">Size</th>
+            <th class="px-6 py-3 font-medium text-neutral-100">Upload Time</th>
+            <th class="px-6 py-3 font-medium text-neutral-100">Expiry Time</th>
+            <th class="px-6 py-3 font-medium text-neutral-100">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for file in data['files'] %}
+          <tr class="border-b border-neutral-600">
+            <td class="px-6 py-3"><a href="/{{ file.link }}" target="_blank" class="underline italic text-rose-500">{{
+                file.link }}</a></td>
+            <td class="px-6 py-3">{{ file.filename }}</td>
+            {% set size_in_mb = file.size / (1024 * 1024) %}
+            <td class="px-6 py-3">
+              {% if size_in_mb < 1 %} {{ (file.size / 1024) | round(2) }} KB {% elif size_in_mb < 1024 %} {{ size_in_mb
+                | round(2) }} MB {% else %} {{ (size_in_mb / 1024) | round(2) }} GB {% endif %} </td>
+            <td class="px-6 py-3">{{ file.upload_time }}</td>
+            <td class="px-6 py-3">{{ file.expiry_time }}</td>
+            <td class="px-6 py-3">
+              <button onclick="deleteFile('{{ file.id }}')" type="button" class="text-rose-500 hover:no-underline"><i
+                  class="fa fa-trash"></i></a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer class="w-full h-12 bg-neutral-900 drop-shadow-2xl backdrop-opacity-10 flex items-center justify-center p-4">
+    <span class="text-sm">
+      Made with ❤️ by
+      <a class="text-rose-500 underline hover:no-underline" href="https://nnisarg.in" target="_blank">
+        Nnisarg Gada
+      </a>
+    </span>
+  </footer>
+
+  <script>
+    function deleteFile(id) {
+      const confirmation = confirm("Are you sure you want to delete this file?");
+      if (confirmation) {
+        fetch("/delete/" + id, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }).then(response => {
+          if (response.ok) {
+            alert("File deleted successfully!");
+            location.reload();
+          }
+          else if (response.status === 404) {
+            alert("File not found!");
+          }
+          else {
+            alert("Error deleting file :/");
+          }
+        })
+      }
+    }
+  </script>
+</body>
+
+</html>

@@ -1,149 +1,106 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Shared File! | SWFT | Simple Web-based File Transfer</title>
 
-    <!-- SEO -->
-    <title>SWFT | Simple Web-based File Transfer</title>
-    <meta
-      name="description"
-      content="SWFT is a lightweight and user-friendly web-based file sharing service that allows you to quickly and securely share files with others"
-    />
-    <meta name="keywords" content="file sharing, temporary, share, upload" />
-    <meta
-      name="author"
-      content="https://github.com/nnisarggada/swft/graphs/contributors"
-    />
-    <meta name="publisher" content="Nnisarg Gada" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="{{ full_url }}" />
-    <meta property="og:title" content="SWFT | Simple Web-based File Transfer" />
-    <meta
-      property="og:description"
-      content="SWFT is a lightweight and user-friendly web-based file sharing service that allows you to quickly and securely share files with others"
-    />
-    <meta
-      property="og:site_name"
-      content="SWFT | Simple Web-based File Transfer"
-    />
-    <meta property="og:locale" content="en_US" />
-    <link rel="canonical" href="{{ full_url }}" />
-    <!-- SEO -->
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shared File! | SWFT | Simple Web-based File Transfer</title>
 
-    <script
-      defer
-      src="{{ umami_src }}"
-      data-website-id="{{ umami_id }}"
-      data-domains="{{ full_url.replace('https://', '').replace('http://', '') }}"
-    ></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script
-      src="https://kit.fontawesome.com/0b92670209.js"
-      crossorigin="anonymous"
-    ></script>
-    <script>
-      function copyToClipboard() {
-        var link = document.getElementById("file-link");
-        var textArea = document.createElement("textarea");
-        textArea.value = link.href;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textArea);
-        alert("Link copied to clipboard!");
+  <!-- SEO -->
+  <title>SWFT | Simple Web-based File Transfer</title>
+  <meta name="description"
+    content="SWFT is a lightweight and user-friendly web-based file sharing service that allows you to quickly and securely share files with others" />
+  <meta name="keywords" content="file sharing, temporary, share, upload" />
+  <meta name="author" content="https://github.com/nnisarggada/swft/graphs/contributors" />
+  <meta name="publisher" content="Nnisarg Gada" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="{{ full_url }}" />
+  <meta property="og:title" content="SWFT | Simple Web-based File Transfer" />
+  <meta property="og:description"
+    content="SWFT is a lightweight and user-friendly web-based file sharing service that allows you to quickly and securely share files with others" />
+  <meta property="og:site_name" content="SWFT | Simple Web-based File Transfer" />
+  <meta property="og:locale" content="en_US" />
+  <link rel="canonical" href="{{ full_url }}" />
+  <!-- SEO -->
+
+  <script defer src="{{ umami_src }}" data-website-id="{{ umami_id }}"
+    data-domains="{{ full_url.replace('https://', '').replace('http://', '') }}"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/0b92670209.js" crossorigin="anonymous"></script>
+  <script>
+    function copyToClipboard() {
+      var link = document.getElementById("file-link");
+      var textArea = document.createElement("textarea");
+      textArea.value = link.href;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      alert("Link copied to clipboard!");
+    }
+
+    function shareFile() {
+      if (navigator.share) {
+        navigator
+          .share({
+            title: "Shared File",
+            text: "Check out this shared file!",
+            url: "{{ link }}",
+          })
+          .then(() => {
+            console.log("Successfully shared");
+          })
+          .catch((error) => {
+            console.error("Error sharing:", error);
+          });
+      } else {
+        alert("Web Share API is not supported in this browser.");
       }
-
-      function shareFile() {
-        if (navigator.share) {
-          navigator
-            .share({
-              title: "Shared File",
-              text: "Check out this shared file!",
-              url: "{{ link }}",
-            })
-            .then(() => {
-              console.log("Successfully shared");
-            })
-            .catch((error) => {
-              console.error("Error sharing:", error);
-            });
-        } else {
-          alert("Web Share API is not supported in this browser.");
-        }
-      }
-    </script>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              poppins: ["Poppins"],
-            },
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            poppins: ["Poppins"],
           },
         },
-      };
-    </script>
-  </head>
+      },
+    };
+  </script>
+</head>
 
-  <body
-    class="bg-neutral-950 text-white font-poppins flex flex-col items-center justify-center"
-  >
-    <nav
-      class="absolute top-0 left-0 w-screen h-20 bg-neutral-900 flex items-center justify-between p-4"
-    >
-      <a href="/" class="text-4xl font-bold"> SWFT </a>
-      <a
-        href="https://github.com/nnisarggada/swft"
-        target="_blank"
-        class="text-4xl"
-      >
+<body class="bg-neutral-950 text-white font-poppins flex flex-col items-center justify-center">
+  <nav class="absolute top-0 left-0 w-full h-20 bg-neutral-900">
+    <div class="flex items-center justify-between p-4 w-full h-full max-w-7xl mx-auto">
+      <a href="/" class="text-3xl md:text-4xl font-bold">SWFT</a>
+      <a href="https://github.com/nnisarggada/swft" target="_blank" class="text-3xl md:text-4xl">
         <i class="fab fa-github"></i>
       </a>
-    </nav>
-
-    <div
-      class="w-screen max-w-2xl min-h-[calc(100dvh-3rem)] flex flex-col items-center justify-center gap-6 p-8 pt-28"
-    >
-      <h1 class="text-5xl mb-12">Share File</h1>
-      <a
-        id="file-link"
-        href="{{ link }}"
-        target="_blank"
-        class="w-full text-center text-2xl italic underline truncate"
-      >
-        {{ full_url }}/{{ link }}</a
-      >
-      <div class="flex items-center gap-6">
-        <i
-          class="fas fa-copy text-xl cursor-pointer"
-          onclick="copyToClipboard()"
-        ></i>
-        <i
-          class="fas fa-share text-xl cursor-pointer"
-          onclick="shareFile()"
-        ></i>
-      </div>
     </div>
+  </nav>
 
-    <footer
-      class="w-screen h-12 bg-neutral-900 drop-shadow-2xl backdrop-opacity-10 flex items-center justify-center p-4"
-    >
-      <span class="text-sm">
-        Made with ❤️ by
-        <a
-          class="text-rose-500 underline hover:no-underline"
-          href="https://nnisarg.in"
-          target="_blank"
-        >
-          Nnisarg Gada
-        </a>
-      </span>
-    </footer>
-  </body>
+  <div class="w-full max-w-2xl min-h-[calc(100dvh-3rem)] flex flex-col items-center justify-center gap-6 p-4 pt-28">
+    <h1 class="text-5xl mb-12">Share File</h1>
+    <a id="file-link" href="{{ link }}" target="_blank" class="w-full text-center text-2xl italic underline truncate">
+      {{ full_url }}/{{ link }}</a>
+    <div class="flex items-center gap-6">
+      <i class="fas fa-copy text-xl cursor-pointer" onclick="copyToClipboard()"></i>
+      <i class="fas fa-share text-xl cursor-pointer" onclick="shareFile()"></i>
+    </div>
+  </div>
+
+  <footer class="w-screen h-12 bg-neutral-900 drop-shadow-2xl backdrop-opacity-10 flex items-center justify-center p-4">
+    <span class="text-sm">
+      Made with ❤️ by
+      <a class="text-rose-500 underline hover:no-underline" href="https://nnisarg.in" target="_blank">
+        Nnisarg Gada
+      </a>
+    </span>
+  </footer>
+</body>
+
 </html>

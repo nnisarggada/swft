@@ -11,6 +11,7 @@ import time
 
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, send_from_directory
+from flask_httpauth import HTTPBasicAuth
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_sqlalchemy import SQLAlchemy
@@ -64,6 +65,8 @@ DOWNLOAD_RATE_LIMIT = os.getenv(
 )  # Number of downbloads
 # Storage URI for Flask Limiter
 STORAGE_URI = os.getenv("STORAGE_URI", "memory://")
+# Password for Admin Dashboard
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "swft")
 
 # -------------------------------------------------------------------------------------
 # Image extensions that are supported by browsers to view directly without downloading
@@ -96,6 +99,7 @@ app.logger.setLevel("ERROR")
 app.config["SQLALCHEMY_DATABASE_URI"] = DB_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
+auth = HTTPBasicAuth()
 limiter = Limiter(
     get_remote_address,
     app=app,
@@ -106,10 +110,34 @@ limiter = Limiter(
 
 # Database models
 class File(db.Model):
+    __tablename__ = "files"
+
     id = db.Column(db.Integer, primary_key=True)
     link = db.Column(db.String(255), unique=True, nullable=False)
     filename = db.Column(db.String(255), nullable=False)
+    size = db.Column(db.Float, nullable=False)
+    upload_time = db.Column(db.DateTime, nullable=False)
     expiry_time = db.Column(db.DateTime, nullable=False)
+
+    def __init__(self, link, filename, size, upload_time, expiry_time):
+        self.link = link
+        self.filename = filename
+        self.size = size
+        self.upload_time = upload_time
+        self.expiry_time = expiry_time
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "link": self.link,
+            "filename": self.filename,
+            "size": round(self.size, 2),
+            "upload_time": self.upload_time.strftime('%d %b %Y - %I:%M %p'),
+            "expiry_time": self.expiry_time.strftime('%d %b %Y - %I:%M %p')
+        }
+
+    def __repr__(self):
+        return f"<File {self.id}>"
 
 
 # Routing for static files
@@ -130,7 +158,7 @@ if not os.path.exists(TEMP_FOLDER):
 
 # Helper functions
 def sanitize_string(input_string: str):
-    input_string = input_string.lower()
+    input_string = input_string.lower().replace(" ", "_").strip()
     return re.sub(r"[^a-zA-Z0-9 ]", "_", input_string)
 
 
@@ -244,6 +272,12 @@ def index():
         "index.html", full_url=URL, umami_src=UMAMI_SRC, umami_id=UMAMI_ID
     )
 
+@app.route("/about", methods=["GET"])
+def about():
+    return render_template(
+        "about.html", full_url=URL, umami_src=UMAMI_SRC, umami_id=UMAMI_ID
+    )
+
 
 @app.route("/", methods=["POST"])
 @limiter.limit(UPLOAD_RATE_LIMIT)
@@ -281,6 +315,7 @@ def upload_file():
         custom_link = sanitize_string(custom_link)
 
     invalid_links = [
+        "admin",
         "about",
         "robots.txt",
         "sitemap.xml",
@@ -301,7 +336,7 @@ def upload_file():
         # convert del_time to datetime object
         expiry_time = datetime.now() + timedelta(hours=del_time)
 
-        file_record = File(link=custom_link, filename=filename, expiry_time=expiry_time)
+        file_record = File(link=custom_link, filename=filename,size=file_size_bytes, upload_time=datetime.now(), expiry_time=expiry_time)
         db.session.add(file_record)
         db.session.commit()
 
@@ -347,6 +382,39 @@ def share_file(link: str):
     _, ext = os.path.splitext(file.filename)
     is_img = ext in IMG_EXTENSIONS
     return send_from_directory(TEMP_FOLDER, file.filename, as_attachment=not is_img)
+
+# Admin dashboard
+@auth.verify_password
+def verify_password(username, password):
+    if username == "admin" and password == ADMIN_PASSWORD:
+        return True
+    return False
+
+@app.route("/admin", methods=["GET"])
+@auth.login_required
+def admin_dashboard():
+    active_files = File.query.all()
+    files_data = [file.to_dict() for file in active_files]
+    data = {
+        "total_files": len(active_files),
+        "files": files_data
+    }
+    return render_template("admin.html", data=data, full_url=URL)
+
+@app.route("/delete/<id>", methods=["DELETE"])
+@auth.login_required
+def delete_file(id):
+    file = File.query.filter_by(id=id).first()
+    if not file:
+        return "File not found", 404
+    try:
+        os.remove(os.path.join(TEMP_FOLDER, file.filename))
+        db.session.delete(file)
+        db.session.commit()
+        return "File deleted successfully", 200
+    except Exception as e:
+        print(f"Error Deleting File {id}: {e}")
+        return f"Error: {e}", 500
 
 
 if __name__ == "__main__":

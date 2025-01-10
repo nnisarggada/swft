@@ -33,4 +33,4 @@ USER python
 EXPOSE 5000
 
 # Command to run the app
-CMD ["flask", "--app=main.py" "run", "--host=0.0.0.0", "--port=$PORT"]
+CMD ["python", "main.py"]

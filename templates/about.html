@@ -1,172 +1,129 @@
 <!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>About SWFT | Simple Web-based File Transfer</title>
+<html lang="en">
 
-    <!-- SEO -->
-    <title>SWFT | Simple Web-based File Transfer</title>
-    <meta
-      name="description"
-      content="SWFT is a lightweight and user-friendly web-based file sharing service that allows you to quickly and securely share files with others"
-    />
-    <meta name="keywords" content="file sharing, temporary, share, upload" />
-    <meta
-      name="author"
-      content="https://github.com/nnisarggada/swft/graphs/contributors"
-    />
-    <meta name="publisher" content="Nnisarg Gada" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="{{ full_url }}" />
-    <meta property="og:title" content="SWFT | Simple Web-based File Transfer" />
-    <meta
-      property="og:description"
-      content="SWFT is a lightweight and user-friendly web-based file sharing service that allows you to quickly and securely share files with others"
-    />
-    <meta
-      property="og:site_name"
-      content="SWFT | Simple Web-based File Transfer"
-    />
-    <meta property="og:locale" content="en_US" />
-    <link rel="canonical" href="{{ full_url }}" />
-    <!-- SEO -->
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About SWFT | Simple Web-based File Transfer</title>
 
-    <script
-      defer
-      src="{{ umami_src }}"
-      data-website-id="{{ umami_id }}"
-      data-domains="{{ full_url.replace('https://', '').replace('http://', '') }}"
-    ></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script
-      src="https://kit.fontawesome.com/0b92670209.js"
-      crossorigin="anonymous"
-    ></script>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              poppins: ["Poppins"],
-            },
+  <!-- SEO -->
+  <meta name="description"
+    content="SWFT is a lightweight and user-friendly web-based file sharing service that allows you to quickly and securely share files with others" />
+  <meta name="keywords" content="file sharing, temporary, share, upload" />
+  <meta name="author" content="https://github.com/nnisarggada/swft/graphs/contributors" />
+  <meta name="publisher" content="Nnisarg Gada" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="{{ full_url }}" />
+  <meta property="og:title" content="SWFT | Simple Web-based File Transfer" />
+  <meta property="og:description"
+    content="SWFT is a lightweight and user-friendly web-based file sharing service that allows you to quickly and securely share files with others" />
+  <meta property="og:site_name" content="SWFT | Simple Web-based File Transfer" />
+  <meta property="og:locale" content="en_US" />
+  <link rel="canonical" href="{{ full_url }}" />
+  <!-- SEO -->
+
+  <script defer src="{{ umami_src }}" data-website-id="{{ umami_id }}"
+    data-domains="{{ full_url.replace('https://', '').replace('http://', '') }}"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/0b92670209.js" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            poppins: ["Poppins"],
           },
         },
-      };
-    </script>
-  </head>
+      },
+    };
+  </script>
+</head>
 
-  <body
-    class="bg-neutral-950 text-white font-poppins flex flex-col items-center min-h-screen justify-between overflow-x-hidden"
-  >
-    <nav
-      class="absolute top-0 left-0 w-screen h-20 bg-neutral-900 flex items-center justify-between p-4"
-    >
-      <a href="/" class="text-4xl font-bold"> SWFT </a>
-      <a
-        href="https://github.com/nnisarggada/swft"
-        target="_blank"
-        class="text-4xl"
-      >
+<body
+  class="bg-neutral-950 text-white font-poppins flex flex-col items-center min-h-screen justify-between overflow-x-hidden">
+  <nav class="absolute top-0 left-0 w-full h-20 bg-neutral-900">
+    <div class="flex items-center justify-between p-4 w-full h-full max-w-7xl mx-auto">
+      <a href="/" class="text-3xl md:text-4xl font-bold">SWFT</a>
+      <a href="https://github.com/nnisarggada/swft" target="_blank" class="text-3xl md:text-4xl">
         <i class="fab fa-github"></i>
       </a>
-    </nav>
-
-    <div
-      class="w-screen max-w-3xl text-xl tracking-wider flex flex-col justify-center gap-6 p-8 my-32"
-    >
-      <h1 class="text-6xl font-bold">SWFT - Simple Web-based File Transfer</h1>
-      <h2 class="text-4xl font-bold mt-20">Project Overview</h2>
-      <p>
-        SWFT is a lightweight and user-friendly web-based file sharing service
-        that simplifies the way you share files with others. Designed with ease
-        of use in mind, SWFT empowers you to quickly and securely share various
-        file types, customize shareable links, and effortlessly manage file
-        storage. With SWFT, file sharing becomes a breeze, whether you're a tech
-        enthusiast or a casual user.
-      </p>
-      <a
-        class="hover:underline text-rose-500"
-        href="https://nnisarg.in/blog/introducing-swft/"
-        target="_blank"
-        >Read more about SWFT here</a
-      >
-      <h2 class="text-4xl font-bold mt-20">Contribute to SWFT</h2>
-      <p>
-        We welcome contributions from the SWFT community. If you're passionate
-        about improving SWFT or want to help shape its future, here's how you
-        can contribute:
-      </p>
-      <ol class="list-decimal list-inside flex flex-col gap-6">
-        <li>
-          <b>Read the Contribution Guidelines: </b> To get started, please read
-          our
-          <a
-            class="underline italic"
-            href="https://github.com/nnisarggada/swft/blob/main/CONTRIBUTING.md"
-            target="_blank"
-            >Contribution Guidelines</a
-          >. This document outlines the process for contributing, coding
-          standards, and other essential information.
-        </li>
-        <li>
-          <b>Code Contributions: </b>If you're a developer, you can contribute
-          by submitting code improvements, bug fixes, or new features. We
-          encourage you to fork the
-          <a
-            class="underline italic"
-            href="https://github.com/nnisarggada/swft"
-            target="_blank"
-            >SWFT repository</a
-          >, make your changes, and create a pull request for review.
-        </li>
-        <li>
-          <b>Testing and Issue Reporting: </b>Even if you're not a developer,
-          you can contribute by testing SWFT, reporting bugs, or suggesting
-          enhancements. Your feedback is invaluable in improving the project.
-          Raise an issue on the
-          <a
-            class="underline italic"
-            href="https://github.com/nnisarggada/swft/issues"
-            target="_blank"
-            >SWFT repository</a
-          >.
-        </li>
-        <li>
-          <b>Documentation: </b>Help us improve our documentation by identifying
-          areas that need clarification or enhancement. Clear and comprehensive
-          documentation is essential for the SWFT community.
-        </li>
-      </ol>
-      <p>
-        By contributing to SWFT, you become part of a community-driven project
-        that aims to make file sharing simpler and more accessible for everyone.
-        Your input and efforts are highly appreciated and play a crucial role in
-        the project's growth and success.
-      </p>
-      <p>
-        Thank you for choosing SWFT for your file-sharing needs. We look forward
-        to your involvement in our project!
-      </p>
     </div>
+  </nav>
 
-    <footer
-      class="w-screen h-12 bg-neutral-900 drop-shadow-2xl backdrop-opacity-10 flex items-center justify-center p-4"
-    >
-      <span class="text-sm">
-        Made with ❤️ by
-        <a
-          class="text-rose-500 underline hover:no-underline"
-          href="https://nnisarg.in"
-          target="_blank"
-        >
-          Nnisarg Gada
-        </a>
-      </span>
-    </footer>
-  </body>
+  <div class="w-full max-w-7xl text-xl tracking-wider flex flex-col justify-center gap-6 p-4 my-32">
+    <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold">SWFT - Simple Web-based File Transfer</h1>
+
+    <h2 class="text-3xl sm:text-4xl font-bold mt-12 sm:mt-20">Project Overview</h2>
+    <p class="text-base sm:text-lg">
+      SWFT is a lightweight and user-friendly web-based file sharing service
+      that simplifies the way you share files with others. Designed with ease
+      of use in mind, SWFT empowers you to quickly and securely share various
+      file types, customize shareable links, and effortlessly manage file
+      storage. With SWFT, file sharing becomes a breeze, whether you're a tech
+      enthusiast or a casual user.
+    </p>
+    <a class="hover:underline text-rose-500 text-base sm:text-lg mt-4" href="https://nnisarg.in/blog/introducing-swft/"
+      target="_blank">Read more
+      about SWFT here</a>
+
+    <h2 class="text-3xl sm:text-4xl font-bold mt-12 sm:mt-20">Contribute to SWFT</h2>
+    <p class="text-base sm:text-lg">
+      We welcome contributions from the SWFT community. If you're passionate
+      about improving SWFT or want to help shape its future, here's how you
+      can contribute:
+    </p>
+    <ol class="list-decimal list-inside flex flex-col gap-4 sm:gap-6">
+      <li class="text-base sm:text-lg">
+        <b>Read the Contribution Guidelines: </b> To get started, please read
+        our
+        <a class="underline italic" href="https://github.com/nnisarggada/swft/blob/main/CONTRIBUTING.md"
+          target="_blank">Contribution Guidelines</a>. This document outlines the process for contributing, coding
+        standards, and other essential information.
+      </li>
+      <li class="text-base sm:text-lg">
+        <b>Code Contributions: </b>If you're a developer, you can contribute
+        by submitting code improvements, bug fixes, or new features. We
+        encourage you to fork the
+        <a class="underline italic" href="https://github.com/nnisarggada/swft" target="_blank">SWFT repository</a>, make
+        your changes, and create a pull request for review.
+      </li>
+      <li class="text-base sm:text-lg">
+        <b>Testing and Issue Reporting: </b>Even if you're not a developer,
+        you can contribute by testing SWFT, reporting bugs, or suggesting
+        enhancements. Your feedback is invaluable in improving the project.
+        Raise an issue on the
+        <a class="underline italic" href="https://github.com/nnisarggada/swft/issues" target="_blank">SWFT
+          repository</a>.
+      </li>
+      <li class="text-base sm:text-lg">
+        <b>Documentation: </b>Help us improve our documentation by identifying
+        areas that need clarification or enhancement. Clear and comprehensive
+        documentation is essential for the SWFT community.
+      </li>
+    </ol>
+
+    <p class="text-base sm:text-lg">
+      By contributing to SWFT, you become part of a community-driven project
+      that aims to make file sharing simpler and more accessible for everyone.
+      Your input and efforts are highly appreciated and play a crucial role in
+      the project's growth and success.
+    </p>
+    <p class="text-base sm:text-lg">
+      Thank you for choosing SWFT for your file-sharing needs. We look forward
+      to your involvement in our project!
+    </p>
+  </div>
+
+  <footer class="w-full h-12 bg-neutral-900 drop-shadow-2xl backdrop-opacity-10 flex items-center justify-center p-4">
+    <span class="text-sm">
+      Made with ❤️ by
+      <a class="text-rose-500 underline hover:no-underline" href="https://nnisarg.in" target="_blank">
+        Nnisarg Gada
+      </a>
+    </span>
+  </footer>
+</body>
+
 </html>

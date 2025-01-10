@@ -119,7 +119,8 @@ The `email` and `link` parameters are optional. The `time` parameter should be p
 - [x] ~~Add support for sending files via email.~~
 - [x] ~~Implement rate limiting to prevent abuse.~~
 - [x] ~~Add logging for email-related actions.~~
-- [ ] Develop an admin dashboard for managing uploads and monitoring usage.
+- [x] ~~Develop an admin dashboard for managing uploads.~~
+- [ ] Add logging to admin dashboard.
 
 ## License
 

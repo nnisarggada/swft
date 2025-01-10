@@ -1,193 +1,132 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- SEO -->
-    <title>SWFT | Simple Web-based File Transfer</title>
-    <meta
-      name="description"
-      content="SWFT is a lightweight and user-friendly web-based file sharing service that allows you to quickly and securely share files with others"
-    />
-    <meta name="keywords" content="file sharing, temporary, share, upload" />
-    <meta
-      name="author"
-      content="https://github.com/nnisarggada/swft/graphs/contributors"
-    />
-    <meta name="publisher" content="Nnisarg Gada" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="{{ full_url }}" />
-    <meta property="og:title" content="SWFT | Simple Web-based File Transfer" />
-    <meta
-      property="og:description"
-      content="SWFT is a lightweight and user-friendly web-based file sharing service that allows you to quickly and securely share files with others"
-    />
-    <meta
-      property="og:site_name"
-      content="SWFT | Simple Web-based File Transfer"
-    />
-    <meta property="og:locale" content="en_US" />
-    <link rel="canonical" href="{{ full_url }}" />
-    <!-- SEO -->
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <script
-      defer
-      src="{{ umami_src }}"
-      data-website-id="{{ umami_id }}"
-      data-domains="{{ full_url.replace('https://', '').replace('http://', '') }}"
-    ></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script
-      src="https://kit.fontawesome.com/0b92670209.js"
-      crossorigin="anonymous"
-    ></script>
-    <script>
-      function clearInputs() {
-        document.getElementById("file").value = "";
-        document.getElementById("link").value = "";
-        document.getElementById("email").value = "";
-        document.getElementById("time").value = "3";
+  <!-- SEO -->
+  <title>SWFT | Simple Web-based File Transfer</title>
+  <meta name="description"
+    content="SWFT is a lightweight and user-friendly web-based file sharing service that allows you to quickly and securely share files with others" />
+  <meta name="keywords" content="file sharing, temporary, share, upload" />
+  <meta name="author" content="https://github.com/nnisarggada/swft/graphs/contributors" />
+  <meta name="publisher" content="Nnisarg Gada" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="{{ full_url }}" />
+  <meta property="og:title" content="SWFT | Simple Web-based File Transfer" />
+  <meta property="og:description"
+    content="SWFT is a lightweight and user-friendly web-based file sharing service that allows you to quickly and securely share files with others" />
+  <meta property="og:site_name" content="SWFT | Simple Web-based File Transfer" />
+  <meta property="og:locale" content="en_US" />
+  <link rel="canonical" href="{{ full_url }}" />
+  <!-- SEO -->
+
+  <script defer src="{{ umami_src }}" data-website-id="{{ umami_id }}"
+    data-domains="{{ full_url.replace('https://', '').replace('http://', '') }}"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/0b92670209.js" crossorigin="anonymous"></script>
+  <script>
+    function clearInputs() {
+      document.getElementById("file").value = "";
+      document.getElementById("link").value = "";
+      document.getElementById("email").value = "";
+      document.getElementById("time").value = "3";
+    }
+    function validateForm() {
+      var fileInput = document.getElementById("file");
+
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert("Please select a file.");
+        return false;
       }
-      function validateForm() {
-        var fileInput = document.getElementById("file");
-
-        if (!fileInput.files || fileInput.files.length === 0) {
-          alert("Please select a file.");
-          return false;
-        }
-        return true;
-      }
-      window.onload = clearInputs;
-    </script>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              poppins: ["Poppins"],
-            },
+      return true;
+    }
+    window.onload = clearInputs;
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            poppins: ["Poppins"],
           },
         },
-      };
-    </script>
-  </head>
+      },
+    };
+  </script>
+</head>
 
-  <body
-    class="bg-neutral-950 text-white font-poppins flex flex-col items-center justify-center"
-  >
-    <nav
-      class="absolute top-0 left-0 w-screen h-20 bg-neutral-900 flex items-center justify-between p-4"
-    >
-      <a href="/" class="text-4xl font-bold"> SWFT </a>
-      <a
-        href="https://github.com/nnisarggada/swft"
-        target="_blank"
-        class="text-4xl"
-      >
+<body class="bg-neutral-950 text-white font-poppins flex flex-col items-center justify-center">
+  <nav class="absolute top-0 left-0 w-full h-20 bg-neutral-900">
+    <div class="flex items-center justify-between p-4 w-full h-full max-w-7xl mx-auto">
+      <a href="/" class="text-3xl md:text-4xl font-bold">SWFT</a>
+      <a href="https://github.com/nnisarggada/swft" target="_blank" class="text-3xl md:text-4xl">
         <i class="fab fa-github"></i>
       </a>
-    </nav>
-
-    <div
-      class="w-screen max-w-2xl min-h-[calc(100dvh-3rem)] flex flex-col items-center justify-center gap-6 p-8 pt-28"
-    >
-      <h1 class="text-3xl">Upload a file</h1>
-      <form
-        method="POST"
-        action="/"
-        enctype="multipart/form-data"
-        onsubmit="return validateForm()"
-        class="w-full flex flex-col gap-4 p-4"
-      >
-        <div class="flex flex-col gap-2">
-          <label for="file" class="font-bold"> Select a file </label>
-          <input
-            type="file"
-            name="file"
-            id="file"
-            required
-            class="w-full h-full file:bg-neutral-500 file:text-white file:outline-none file:border-none file:px-4 file:py-2 file:rounded-md file:font-semibold file:mr-6 hover:file:cursor-pointer"
-          />
-        </div>
-        <div class="flex flex-col gap-2">
-          <label for="link" class="font-bold"> Custom link (optional): </label>
-          <div class="flex items-center border border-white rounded-md p-2">
-            <span
-              >{{ full_url.replace("https://", "").replace("http://", "")
-              }}/</span
-            >
-            <input
-              type="text"
-              name="link"
-              id="link"
-              value=""
-              class="w-full bg-neutral-950 text-white focus:outline-none"
-            />
-          </div>
-        </div>
-        <div class="flex flex-col gap-2">
-          <label for="link" class="font-bold">
-            Email Address (optional):
-          </label>
-          <div class="flex items-center border border-white rounded-md p-2">
-            <input
-              type="email"
-              name="email"
-              id="email"
-              value=""
-              class="w-full bg-neutral-950 text-white focus:outline-none"
-            />
-          </div>
-        </div>
-        <div class="flex flex-col gap-2">
-          <label for="time" class="font-bold"> Delete after: </label>
-          <div>
-            <select
-              name="time"
-              id="time"
-              class="w-fit bg-neutral-500 font-bold appearance-none text-white rounded-md p-2 px-4"
-            >
-              <option value="0.5">30 mins</option>
-              <option value="1">1 hr</option>
-              <option value="3" selected>3 hrs</option>
-              <option value="12">12 hrs</option>
-              <option value="24">1 day</option>
-              <option value="72">3 days</option>
-              <option value="168">7 days</option>
-            </select>
-          </div>
-        </div>
-        <div>
-          <input
-            type="submit"
-            value="Upload"
-            class="bg-blue-500 text-xl text-white font-bold py-2 px-4 rounded-lg cursor-pointer mt-4"
-          />
-        </div>
-      </form>
-      <a href="/about" class="w-full italic underline px-4 text-rose-500"
-        >What is SWFT?</a
-      >
     </div>
+  </nav>
 
-    <footer
-      class="w-screen h-12 bg-neutral-900 drop-shadow-2xl backdrop-opacity-10 flex items-center justify-center p-4"
-    >
-      <span class="text-sm">
-        Made with ❤️ by
-        <a
-          class="text-rose-500 underline hover:no-underline"
-          href="https://nnisarg.in"
-          target="_blank"
-        >
-          Nnisarg Gada
-        </a>
-      </span>
-    </footer>
-  </body>
+  <div class="w-full max-w-2xl min-h-[calc(100dvh-3rem)] flex flex-col items-center justify-center gap-6 p-4 pt-28">
+    <h1 class="text-3xl">Upload a file</h1>
+    <form method="POST" action="/" enctype="multipart/form-data" onsubmit="return validateForm()"
+      class="w-full flex flex-col gap-4 p-4">
+      <div class="flex flex-col gap-2">
+        <label for="file" class="font-bold"> Select a file </label>
+        <input type="file" name="file" id="file" required
+          class="w-full h-full file:bg-neutral-500 file:text-white file:outline-none file:border-none file:px-4 file:py-2 file:rounded-md file:font-semibold file:mr-6 hover:file:cursor-pointer" />
+      </div>
+      <div class="flex flex-col gap-2">
+        <label for="link" class="font-bold"> Custom link (optional): </label>
+        <div class="flex items-center border border-white rounded-md p-2">
+          <span>{{ full_url.replace("https://", "").replace("http://", "")
+            }}/</span>
+          <input type="text" name="link" id="link" value=""
+            class="w-full bg-neutral-950 text-white focus:outline-none" />
+        </div>
+      </div>
+      <div class="flex flex-col gap-2">
+        <label for="link" class="font-bold">
+          Email Address (optional):
+        </label>
+        <div class="flex items-center border border-white rounded-md p-2">
+          <input type="email" name="email" id="email" value=""
+            class="w-full bg-neutral-950 text-white focus:outline-none" />
+        </div>
+      </div>
+      <div class="flex flex-col gap-2">
+        <label for="time" class="font-bold"> Delete after: </label>
+        <div>
+          <select name="time" id="time"
+            class="w-fit bg-neutral-500 font-bold appearance-none text-white rounded-md p-2 px-4">
+            <option value="0.5">30 mins</option>
+            <option value="1">1 hr</option>
+            <option value="3" selected>3 hrs</option>
+            <option value="12">12 hrs</option>
+            <option value="24">1 day</option>
+            <option value="72">3 days</option>
+            <option value="168">7 days</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <input type="submit" value="Upload"
+          class="bg-blue-500 text-xl text-white font-bold py-2 px-4 rounded-lg cursor-pointer mt-4" />
+      </div>
+    </form>
+    <a href="/about" class="w-full italic underline px-4 text-rose-500">What is SWFT?</a>
+  </div>
+
+  <footer class="w-screen h-12 bg-neutral-900 drop-shadow-2xl backdrop-opacity-10 flex items-center justify-center p-4">
+    <span class="text-sm">
+      Made with ❤️ by
+      <a class="text-rose-500 underline hover:no-underline" href="https://nnisarg.in" target="_blank">
+        Nnisarg Gada
+      </a>
+    </span>
+  </footer>
+</body>
+
 </html>
