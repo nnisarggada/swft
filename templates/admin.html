@@ -70,8 +70,8 @@
           {% for file in data['files'] %}
           <tr class="border-b border-neutral-600">
             <td class="px-6 py-3"><a href="/{{ file.link }}" target="_blank" class="underline italic text-rose-500">{{
-                file.link }}</a></td>
-            <td class="px-6 py-3">{{ file.filename }}</td>
+                file.link[:20] }}{% if file.link|length > 20 %}...{% endif %}</a></td>
+            <td class="px-6 py-3">{{ file.filename[:20] }}{% if file.filename|length > 20 %}...{% endif %}</td>
             {% set size_in_mb = file.size / (1024 * 1024) %}
             <td class="px-6 py-3">
               {% if size_in_mb < 1 %} {{ (file.size / 1024) | round(2) }} KB {% elif size_in_mb < 1024 %} {{ size_in_mb
