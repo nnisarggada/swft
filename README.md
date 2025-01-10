@@ -71,6 +71,7 @@ DB_PORT = 5432 # Database port
 DB_NAME = "swft" # Database name
 DB_USER = "postgres" # Database user
 DB_PASSWORD = "password" # Database password
+ADMIN_PASSWORD = "swft" # Password for the admin dashboard
 ```
 
 Additional settings can be configured as needed (e.g., email notifications, rate limits, analytics).
@@ -78,6 +79,9 @@ Additional settings can be configured as needed (e.g., email notifications, rate
 ### Running the App
 
 Once configured, run the app using Docker Compose as described above. The app will be accessible in your browser at `http://localhost:8080`.
+The admin dashboard can be accessed at `http://localhost:8080/admin`.
+
+Note: If you want to run the app on a different port, you can update the `PORT` variable in the `.env` file.
 
 ---
 
