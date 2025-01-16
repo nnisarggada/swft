@@ -16,7 +16,6 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.datastructures import FileStorage
-from werkzeug.utils import secure_filename
 
 # Load environment variables
 _ = load_dotenv()
