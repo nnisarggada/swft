@@ -225,8 +225,7 @@ def send_email(email_address: str, file_path: str, file_url: str, expiry: float)
                     f"attachment; filename={os.path.basename(file_path)}",
                 )
                 message.attach(attachment)
-            with smtplib.SMTP(SMTP_SERVER, int(SMTP_PORT)) as server:
-                _ = server.starttls()
+            with smtplib.SMTP_SSL(SMTP_SERVER, int(SMTP_PORT)) as server:
                 _ = server.login(SMTP_USERNAME, SMTP_PASSWORD)
                 _ = server.sendmail(SMTP_FROM, email_address, message.as_string())
                 print(f"Email sent to {email_address}")
@@ -293,7 +292,6 @@ def upload_file():
         return "No selected file\n", 400
 
     filename = generate_unique_filename(uploaded_file.filename)
-    filename = secure_filename(filename)
     file_path = os.path.join(TEMP_FOLDER, filename)
 
     folder_size_bytes = get_folder_size(TEMP_FOLDER)
