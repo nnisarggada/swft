@@ -66,6 +66,7 @@ DOWNLOAD_RATE_LIMIT = os.getenv(
 # Storage URI for Flask Limiter
 STORAGE_URI = os.getenv("STORAGE_URI", "memory://")
 # Password for Admin Dashboard
+ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "swft")
 
 # -------------------------------------------------------------------------------------
@@ -200,33 +201,36 @@ def calculate_file_size(file: FileStorage) -> int:
 def send_email(email_address: str, file_path: str, file_url: str, expiry: float):
     def email_task():
         if not is_valid_email(email_address):
+            print(f"Invalid email address: {email_address}")
             return
         if not all([SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_FROM, SMTP_PASSWORD]):
+            print(f"Missing required configuration: {SMTP_SERVER}, {SMTP_PORT}, {SMTP_USERNAME}, {SMTP_FROM}, {SMTP_PASSWORD}")
             return
-        message = MIMEMultipart()
-        message["From"] = SMTP_FROM
-        message["To"] = email_address
-        message["Subject"] = f"File shared with you via {URL}"
-        body = (
-            f"Hello, the file you provided is attached, and the URL is "
-            f"{file_url}. It expires in {round(expiry, 2)} hours."
-        )
-        message.attach(MIMEText(body, "plain"))
-        if os.path.exists(file_path):
-            with open(file_path, "rb") as file:
-                attachment = MIMEBase("application", "octet-stream")
-                attachment.set_payload(file.read())
-            encoders.encode_base64(attachment)
-            attachment.add_header(
-                "Content-Disposition",
-                f"attachment; filename={os.path.basename(file_path)}",
-            )
-            message.attach(attachment)
         try:
+            message = MIMEMultipart()
+            message["From"] = SMTP_FROM
+            message["To"] = email_address
+            message["Subject"] = f"File shared with you via {URL}"
+            body = (
+                f"Hello, the file you provided is attached, and the URL is "
+                f"{file_url}. It expires in {round(expiry, 2)} hours."
+            )
+            message.attach(MIMEText(body, "plain"))
+            if os.path.exists(file_path):
+                with open(file_path, "rb") as file:
+                    attachment = MIMEBase("application", "octet-stream")
+                    attachment.set_payload(file.read())
+                encoders.encode_base64(attachment)
+                attachment.add_header(
+                    "Content-Disposition",
+                    f"attachment; filename={os.path.basename(file_path)}",
+                )
+                message.attach(attachment)
             with smtplib.SMTP(SMTP_SERVER, int(SMTP_PORT)) as server:
                 _ = server.starttls()
                 _ = server.login(SMTP_USERNAME, SMTP_PASSWORD)
                 _ = server.sendmail(SMTP_FROM, email_address, message.as_string())
+                print(f"Email sent to {email_address}")
         except Exception as e:
             print(f"Error: {e}")
 
@@ -386,7 +390,7 @@ def share_file(link: str):
 # Admin dashboard
 @auth.verify_password
 def verify_password(username, password):
-    if username == "admin" and password == ADMIN_PASSWORD:
+    if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
         return True
     return False
 
