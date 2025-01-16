@@ -46,21 +46,38 @@
   </script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
     rel="stylesheet" />
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            poppins: ["Poppins"],
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              poppins: ["Poppins"],
+            },
           },
         },
-      },
-    };
-  </script>
-</head>
+      };
+    </script>
+    <style>
+      * {
+        -ms-overflow-style: none !important;
+        scrollbar-width: none !important;
+      }
+      
+      *::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+      }
+  
+      html, body {
+        overflow-y: scroll;
+        -webkit-overflow-scrolling: touch;
+      }
+    </style>
+  </head>
 
-<body class="bg-neutral-950 text-white font-poppins flex flex-col items-center justify-center">
-  <nav class="absolute top-0 left-0 w-full h-20 bg-neutral-900">
+  <body class="bg-neutral-950 text-white font-poppins flex flex-col items-center justify-center">
+    <nav class="absolute top-0 left-0 w-full h-20 bg-neutral-900">
     <div class="flex items-center justify-between p-4 w-full h-full max-w-7xl mx-auto">
       <a href="/" class="text-3xl md:text-4xl font-bold">SWFT</a>
       <a href="https://github.com/nnisarggada/swft" target="_blank" class="text-3xl md:text-4xl">
