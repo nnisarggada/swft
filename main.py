@@ -96,7 +96,6 @@ DB_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 app = Flask(
     __name__, static_url_path="", static_folder="static", template_folder="templates"
 )
-app.logger.setLevel("ERROR")
 app.config["SQLALCHEMY_DATABASE_URI"] = DB_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
@@ -345,7 +344,10 @@ def upload_file():
         db.session.commit()
 
         if email_address is not None and email_address != "":
-            send_email(email_address, file_path, URL + "/" + custom_link, del_time)
+            try:
+                send_email(email_address, file_path, URL + "/" + custom_link, del_time)
+            except Exception as e:
+                print(f"Error: {e}")
         else:
             email_address = ""
 
