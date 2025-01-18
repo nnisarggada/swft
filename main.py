@@ -199,10 +199,10 @@ def calculate_file_size(file: FileStorage) -> int:
 def send_email(email_address: str, file_path: str, file_url: str, expiry: float):
     def email_task():
         if not is_valid_email(email_address):
-            print(f"Invalid email address: {email_address}")
+            print(f"[ERROR] - Invalid email address: {email_address}")
             return
         if not all([SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_FROM, SMTP_PASSWORD]):
-            print(f"Missing required configuration: {SMTP_SERVER}, {SMTP_PORT}, {SMTP_USERNAME}, {SMTP_FROM}, {SMTP_PASSWORD}")
+            print(f"[ERROR] - Missing required configuration: {SMTP_SERVER}, {SMTP_PORT}, {SMTP_USERNAME}, {SMTP_FROM}, {SMTP_PASSWORD}")
             return
         try:
             message = MIMEMultipart()
@@ -229,7 +229,7 @@ def send_email(email_address: str, file_path: str, file_url: str, expiry: float)
                 _ = server.sendmail(SMTP_FROM, email_address, message.as_string())
                 print(f"Email sent to {email_address}")
         except Exception as e:
-            print(f"Error: {e}")
+            print(f"[ERROR] - {e}")
 
     threading.Thread(target=email_task).start()
 
@@ -261,7 +261,7 @@ def log_request():
 
     if method == "GET":
         log_content = (
-            f"{time} | {remote_addr} | {user_agent} | "
+            f"[ACCESS] - {time} | {remote_addr} | {user_agent} | "
             f"{method} | {path} | {scheme}\n"
         )
         print(log_content, end="")
@@ -344,7 +344,7 @@ def upload_file():
             try:
                 send_email(email_address, file_path, URL + "/" + custom_link, del_time)
             except Exception as e:
-                print(f"Error: {e}")
+                print(f"[ERROR] - {e}")
         else:
             email_address = ""
 
@@ -356,7 +356,7 @@ def upload_file():
         )
         time = datetime.now()
         log_content = (
-            f"{time} {remote_addr} | {user_agent} | "
+            f"[UPLOAD] - {time} {remote_addr} | {user_agent} | "
             f"{filename} {custom_link} {del_time} | {email_address}\n"
         )
         print(log_content, end="")
@@ -416,7 +416,7 @@ def delete_file(id):
         db.session.commit()
         return "File deleted successfully", 200
     except Exception as e:
-        print(f"Error Deleting File {id}: {e}")
+        print(f"[ERROR] - Could not delete file {id}: {e}")
         return f"Error: {e}", 500
 
 
