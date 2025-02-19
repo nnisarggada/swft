@@ -233,17 +233,22 @@ def send_email(email_address: str, file_path: str, file_url: str, expiry: float)
 
     threading.Thread(target=email_task).start()
 
-
 def delete_expired_files():
-    with app.app_context():  # Activate application context
+    with app.app_context():  # Ensure context is available
         while True:
-            expired_files = File.query.filter(File.expiry_time < datetime.now()).all()
-            for file in expired_files:
-                if os.path.exists(os.path.join(TEMP_FOLDER, file.filename)):
-                    os.remove(os.path.join(TEMP_FOLDER, file.filename))
-                db.session.delete(file)
+            try:
+                print("Checking for expired files...")
+                expired_files = File.query.filter(File.expiry_time < datetime.now()).all()
+                for file in expired_files:
+                    file_path = os.path.join(TEMP_FOLDER, file.filename)
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+                        print(f"Deleted file: {file.filename}")
+                    db.session.delete(file)
                 db.session.commit()
-            time.sleep(60)  # Check every minute
+            except Exception as e:
+                print(f"Error in delete_expired_files: {e}")
+            time.sleep(60) # Check every 60 seconds
 
 
 @app.before_request
