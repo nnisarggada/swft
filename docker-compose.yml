@@ -7,6 +7,7 @@ services:
       POSTGRES_PASSWORD: password # Database password
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - /etc/localtime:/etc/localtime:ro
     networks:
       - app_network
     healthcheck:
@@ -14,7 +15,7 @@ services:
       interval: 10s
       retries: 5
       start_period: 30s
-      timeout: 5s
+      timeout: 10s
     restart: always
 
   app:
@@ -44,11 +45,13 @@ services:
     restart: always
     volumes:
       - ./data:/app/data # Mount local 'data' directory to '/app/data' in container
+      - /etc/localtime:/etc/localtime:ro
 
   nginx:
     image: nginx:latest
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf # Mount Nginx configuration file
+      - /etc/localtime:/etc/localtime:ro
     env_file:
       - .env
     ports:
